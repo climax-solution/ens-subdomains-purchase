@@ -1,40 +1,8 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useState } from 'react'
-import Web3 from "web3";
 import styles from '../styles/Home.module.css'
 
-const networks = {
-  1: "Main Network",
-  3: "Ropsten Network",
-
-}
-
 export default function Home() {
-
-  const [walletAddress, setWalletAddress] = useState('');
-  const [chainId, setChainId] = useState('1');
-
-  const walletConnect = async() => {
-    if (window.ethereum) {
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      const web3 = new Web3(window.ethereum);
-      const _chainID = await web3.eth.getChainId();
-      setWalletAddress(accounts[0]);
-      setChainId(_chainID);
-    }
-  }
-
-  const walletDisConnect = () => {
-    setChainId(1);
-    setWalletAddress('');
-  }
-
-  const shorten = (str, cut = 4) => {
-    const res = str.substr(0, cut) + '...' + str.substr(-cut);
-    return res;
-  }
 
   return (
     <div className={styles.container}>
@@ -45,25 +13,6 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <div className='flex items-center justify-between w-full'>
-          <div className='flex flex-col gap-2 items-center'>
-            <span className='text-white'>
-              { !walletAddress ? "Main Network (Read Only)" : networks[chainId] + "(" + shorten(walletAddress) + ")" }
-            </span>
-            <button
-              className="px-4 py-1 w-38 text-sm text-white font-semibold rounded-lg border border-white-600 bg-transparent"
-              onClick={ walletAddress ? walletDisConnect : walletConnect}
-            >{ (!walletAddress ? "Connect" : "Disconnect") + " Wallet"}</button>
-          </div>
-          <div className='flex gap-2'>
-            <Link href="/">
-              <span className='text-white cursor-pointer'>My Account</span>
-            </Link>
-            <Link href="/">
-              <span className='text-white cursor-pointer'>About</span>
-            </Link>
-          </div>
-        </div>
         <p className={styles.description}>
           <Image
             src="/logo.svg"
