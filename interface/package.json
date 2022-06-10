@@ -9,12 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.6.6",
+    "@ensdomains/ens-avatar": "^0.1.5",
+    "@ensdomains/ens-validation": "^0.1.0",
+    "@ensdomains/eth-ens-namehash": "^2.0.15",
+    "@ensdomains/ui": "^3.4.1",
     "@headlessui/react": "^1.6.4",
     "@heroicons/react": "^1.0.6",
+    "graphql": "^16.5.0",
     "next": "12.1.6",
     "react": "18.1.0",
     "react-dom": "18.1.0",
-    "web3": "^1.7.3"
+    "traverse": "^0.6.6",
+    "web3": "^1.7.3",
+    "zen-observable": "^0.8.15"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
