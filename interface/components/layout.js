@@ -3,6 +3,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Web3 from "web3";
 import Image from "next/image";
+import { connectProvider, disconnectProvider } from '../utility/utils/providerUtils'
+import NetworkInformation from "./network-information";
 
 const networks = {
     1: "Mainnet",
@@ -12,28 +14,7 @@ const networks = {
 function Layout({ children }) {
 
     const { pathname: path } = useRouter();
-    const [walletAddress, setWalletAddress] = useState('');
-    const [chainId, setChainId] = useState('1');
-
-    const walletConnect = async() => {
-        if (window.ethereum) {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const web3 = new Web3(window.ethereum);
-        const _chainID = await web3.eth.getChainId();
-        setWalletAddress(accounts[0]);
-        setChainId(_chainID);
-        }
-    }
-
-    const walletDisConnect = () => {
-        setChainId(1);
-        setWalletAddress('');
-    }
-
-    const shorten = (str, cut = 4) => {
-        const res = str.substr(0, cut) + '...' + str.substr(-cut);
-        return res;
-    }
+  
 
     return (
         <div className="flex flex-no-wrap">
@@ -50,19 +31,12 @@ function Layout({ children }) {
                                     height="100"
                                     alt=""
                                     className="logo-icon"
+                                    onDragStart={ (e) => e.preventDefault() }
                                 />
                             </a>
                         </Link>
                     </div>
-                    <div className='flex flex-col gap-2 items-center'>
-                        <span className='text-white'>
-                        { !walletAddress ? "Main Network (Read Only)" : networks[chainId] + "(" + shorten(walletAddress) + ")" }
-                        </span>
-                        <button
-                        className="px-4 py-1 w-38 text-sm text-white font-semibold rounded-lg border border-white-600 bg-transparent"
-                        onClick={ walletAddress ? walletDisConnect : walletConnect}
-                        >{ (!walletAddress ? "Connect" : "Disconnect") + " Wallet"}</button>
-                    </div>
+                    <NetworkInformation/>
                     <ul className="mt-6">
                         <li className={`flex w-full justify-between cursor-pointer items-center mb-6 ${path.slice(1) == 'explore' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500"}`}>
                             <div className="flex items-center">
