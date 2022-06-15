@@ -3,6 +3,8 @@ import { Dialog, Transition } from '@headlessui/react'
 import { CloudUploadIcon } from '@heroicons/react/outline'
 import axios from "axios";
 import { gql, useQuery } from "@apollo/client";
+import getWeb3 from "../../utility/getWeb3";
+import { useAppContext } from "../../context/state";
 
 const NETWORK_INFORMATION_QUERY = gql`
   query getNetworkInfo @client {
@@ -16,6 +18,8 @@ const NETWORK_INFORMATION_QUERY = gql`
 `
 
 const Collect = ({ ite, name, id }) => {
+
+    const { account, domainContract, regisrarContract } = useAppContext();
 
     const [isOpen, setOpenModal] = useState(false);
     const [avatar, setAvatar] = useState("https://openseauserdata.com/files/66b5f0d3387b8fc662a2d6d19468c863.svg");
@@ -36,13 +40,49 @@ const Collect = ({ ite, name, id }) => {
         }
     }, [name, network]);
 
+    useEffect(() => {
+        async function get() {
+            await getWeb3();
+        }
+        
+        get();
+
+    }, []);
+
     const fetchAvatar = async() => {
-        await axios.get(`https://metadata.ens.domains/${network}/0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85/${id}`).then(res => {
+        await axios.get(`https://metadata.ens.domains/${network}/${process.env.ENSDomain}/${id}`).then(res => {
             const { image } = res.data;
             if (image) setAvatar(image);
         }).catch(err => {
             console.log(err);
         });
+    }
+
+    const listDomain = async() => {
+        if (domainContract && regisrarContract && account ) {
+            const allowance = await domainContract.methods.getApproved(id.toString(0)).call();
+            console.log(allowance);
+            if (allowance.toLowerCase() != process.env.Registrar.toLowerCase()) {
+                await domainContract.methods.approve(process.env.Registrar, id.toString(10)).send({
+                    from: account
+                });
+            }
+
+            const prices = [
+                convertToEth(oneM),
+                convertToEth(sixM),
+                convertToEth(oneY),
+                convertToEth(forever)
+            ];
+
+            await regisrarContract.methods.configureDomainFor(id, prices).send({
+                from: account
+            });
+        }
+    }
+
+    const convertToEth = (price) => {
+        return WEB3.utils.toWei(price, 'ether');
     }
 
     const closeModal = () => {
@@ -157,7 +197,7 @@ const Collect = ({ ite, name, id }) => {
                                         <button
                                             type="button"
                                             className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                            onClick={() => setOpenModal(false)}
+                                            onClick={listDomain}
                                         >
                                             Confirm
                                         </button>

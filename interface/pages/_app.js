@@ -1,4 +1,5 @@
 import  { ApolloProvider } from "@apollo/client";
+import { AppWrapper } from "../context/state";
 import Layout from '../components/layout'
 import '../styles/globals.css'
 
@@ -11,9 +12,11 @@ function MyApp({ Component, pageProps }) {
   const client = clientReactive(setupClient(networkIdReactive()))
   return (
     <ApolloProvider client={client}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <AppWrapper>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </AppWrapper>
     </ApolloProvider>
   )
 }

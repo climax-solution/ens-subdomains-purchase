@@ -19,7 +19,7 @@
  */
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const mnemonic = "";
+const mnemonic = "master gallery almost century lonely label anxiety refuse cable super kitten autumn";
 const infura_id = "e5f6b05589544b1bb8526dc3c034c63e";
 
 //

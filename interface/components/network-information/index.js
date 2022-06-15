@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { gql } from '@apollo/client'
-import { useQuery, useMutation } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 
-import { GET_REVERSE_RECORD } from '../../utility/graphql/queries'
 import { connectProvider, disconnectProvider } from '../../utility/utils/providerUtils'
+import { useAppContext } from '../../context/state'
+import getWeb3 from '../../utility/getWeb3'
 
 const NETWORK_INFORMATION_QUERY = gql`
   query getNetworkInfo @client {
@@ -17,24 +18,27 @@ const NETWORK_INFORMATION_QUERY = gql`
 `
 
 function NetworkInformation() {
+  const { setAccount, setWEB3, setDomainContract, setRegistrarContract } = useAppContext();
+
   const {
-    data: { accounts, isSafeApp, network, displayName, isReadOnly }
+    data: { accounts, network }
   } = useQuery(NETWORK_INFORMATION_QUERY)
 
-  const {
-    data: { getReverseRecord } = {},
-    loading: reverseRecordLoading
-  } = useQuery(GET_REVERSE_RECORD, {
-    variables: {
-      address: accounts?.[0]
-    },
-    skip: !accounts?.length
-  })
-
-    const shorten = (str, cut = 4) => {
-        const res = str.substr(0, cut) + '...' + str.substr(-cut);
-        return res;
+  useEffect(() => {
+    async function fetchInstance() {
+      const { web3, ENSDomain, SubdomainReg } = await getWeb3();
+      setAccount(accounts ? accounts[0] : '');
+      setWEB3(web3);
+      setDomainContract(ENSDomain);
+      setRegistrarContract(SubdomainReg);
     }
+    fetchInstance();
+  }, [network, accounts])
+
+  const shorten = (str, cut = 4) => {
+      const res = str.substr(0, cut) + '...' + str.substr(-cut);
+      return res;
+  }
 
   return (
     <div className='flex flex-col gap-2 items-center'>
