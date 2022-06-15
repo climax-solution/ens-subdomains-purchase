@@ -26,13 +26,13 @@ import {
   
   export const setFavourites = () => {
     favouritesReactive(
-      JSON.parse(window.localStorage.getItem('ensFavourites')) || []
+      JSON.parse(window?.localStorage.getItem('ensFavourites')) || []
     )
   }
   
   export const setSubDomainFavourites = () => {
     subDomainFavouritesReactive(
-      JSON.parse(window.localStorage.getItem('ensSubDomainFavourites')) || []
+      JSON.parse(window?.localStorage.getItem('ensSubDomainFavourites')) || []
     )
   }
   
@@ -63,10 +63,10 @@ import {
           ensAddress: process.env.REACT_APP_ENS_ADDRESS
         })
         provider = providerObject
-        let labels = window.localStorage['labels']
-          ? JSON.parse(window.localStorage['labels'])
+        let labels = window?.localStorage['labels']
+          ? JSON.parse(window?.localStorage['labels'])
           : {}
-        window.localStorage.setItem(
+        window?.localStorage.setItem(
           'labels',
           JSON.stringify({
             ...labels,
@@ -83,7 +83,7 @@ import {
       }
   
       if (
-        window.localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER') ||
+        window?.localStorage.getItem('WEB3_CONNECT_CACHED_PROVIDER') ||
         reconnect
       ) {
         provider = await connect()
