@@ -4,7 +4,6 @@ import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_REVERSE_RECORD } from '../../utility/graphql/queries'
 import { connectProvider, disconnectProvider } from '../../utility/utils/providerUtils'
-import { imageUrl } from '../../utility/utils/utils'
 
 const NETWORK_INFORMATION_QUERY = gql`
   query getNetworkInfo @client {

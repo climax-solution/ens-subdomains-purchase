@@ -1,21 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Web3 from "web3";
 import Image from "next/image";
-import { connectProvider, disconnectProvider } from '../utility/utils/providerUtils'
 import NetworkInformation from "./network-information";
-
-const networks = {
-    1: "Mainnet",
-    3: "Ropsten",
-}
 
 function Layout({ children }) {
 
     const { pathname: path } = useRouter();
   
-
     return (
         <div className="flex flex-no-wrap">
             {/* Sidebar starts */}
@@ -55,7 +47,7 @@ function Layout({ children }) {
                             </div>
                             <div className="py-1 px-3 bg-sky-700 rounded text-white flex items-center justify-center text-xs">5</div>
                         </li>
-                        <li className={"flex w-full justify-between cursor-pointer items-center mb-6 " + (path.slice(1) == 'collected' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
+                        <li className={"flex w-full justify-between cursor-pointer items-center mb-6 " + ((path.slice(1)).indexOf("collected") == 0 ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
                             <div className="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -249,7 +241,7 @@ function Layout({ children }) {
             </div>
             {/* Sidebar ends */}
             {/* Remove class [ h-64 ] when adding a card block */}
-            <div className="container mx-auto py-10 h-full max-h-screen overflow-auto px-12">
+            <div className="container mx-auto h-full max-h-screen overflow-auto">
                 {/* Remove class [ border-dashed border-2 border-gray-300 ] to remove dotted border */}
                 <div className="w-full h-full rounded 
                 iop-oiu">{children}</div>
