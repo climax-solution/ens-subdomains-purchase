@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 import { gql, useQuery } from '@apollo/client'
 import moment from "moment";
-
 import Collect from "../../components/collect";
-
 import {
     GET_FAVOURITES,
     GET_DOMAINS_SUBGRAPH,
@@ -13,13 +11,12 @@ import {
 } from '../../utility/graphql/queries'
 import {
   getEtherScanAddr,
-  filterNormalised,
   normaliseOrMark
 } from '../../utility/utils/utils'
 import { decryptName, checkIsDecrypted } from '../../utility/api/labels'
-import { calculateIsExpiredSoon } from '../../utility/utils/dates'
 import { globalErrorReactive } from '../../utility/apollo/reactiveVars'
 import { useBlock } from "../../utility/hooks";
+import Loader from "../../components/loader";
 
 const RESET_STATE_QUERY = gql`
   query resetStateQuery @client {
@@ -114,24 +111,22 @@ const Collected = () => {
 
     const router = useRouter();
     const { slug } = router.query;
-    const DEFAULT_RESULTS_PER_PAGE = 25
-    const [list, setList] = useState([...new Array(6)]);
     const address = "0x0F09aE2ba91449a7B4201721f98f482cAF9737Ee";
     const domainType = 'registrant';
 
     const {
-        data: { networkId, isENSReady }
+        data: { networkId }
       } = useQuery(RESET_STATE_QUERY)
+      console.log("networkId", networkId);
       const normalisedAddress = normaliseAddress(address)
       const pageQuery = ""
       const page = pageQuery ? parseInt(pageQuery) : 1
       const { block } = useBlock()
-      let [resultsPerPage, setResultsPerPage] = useState(DEFAULT_RESULTS_PER_PAGE)
-      let [etherScanAddr, setEtherScanAddr] = useState(null)
       let [activeSort, setActiveSort] = useState({
         type: 'expiryDate',
         direction: 'asc'
       })
+      let [resultsPerPage, setResultsPerPage] = useState(25)
       let [checkedBoxes, setCheckedBoxes] = useState({})
       let [years, setYears] = useState(1)
       const [selectAll, setSelectAll] = useState(false)
@@ -168,21 +163,13 @@ const Collected = () => {
       const {
         data: { globalError }
       } = useQuery(GET_ERRORS)
-      const { data: { favourites } = [] } = useQuery(GET_FAVOURITES)
-      useEffect(() => {
-        if (isENSReady) {
-          getEtherScanAddr().then(setEtherScanAddr)
-        }
-      }, [isENSReady])
     
       if (error) {
-        console.log(error)
         return <>Error getting domains. {JSON.stringify(error)}</>
       }
-    
+      console.log(loading, data);
       if (loading) {
-        // return <Loader withWrap large />
-        return <p>Loading ...</p>
+        return <Loader/>
       }
     
       let normalisedDomains = []
@@ -203,35 +190,17 @@ const Collected = () => {
       if (globalError.invalidCharacter || !decryptedDomains) {
         return <InvalidCharacterError message={globalError.invalidCharacter} />
       }
-      // let sortedDomains = decryptedDomains.sort(getSortFunc(activeSort))
       let domains = decryptedDomains
-      console.log("decryptedDomains", decryptedDomains);
-      const selectedNames = Object.entries(checkedBoxes)
-        .filter(([key, value]) => value)
-        .map(([key]) => key)
-    
-      const allNames = domains
-        .filter(d => d.domain.labelName)
-        .map(d => d.domain.name)
-    
-      const selectAllNames = () => {
-        const obj = allNames.reduce((acc, name) => {
-          acc[name] = true
-          return acc
-        }, {})
-    
-        setCheckedBoxes(obj)
-      }
-    
-      const hasNamesExpiringSoon = !!domains.find(domain =>
-        calculateIsExpiredSoon(domain.expiryDate)
-      )
 
     return (
-        <div className="flex flex-wrap justify-even gap-2">
+        <div className="flex flex-wrap justify-even gap-2 p-10">
         {
-            list.map((item, idx) => (
-                <Collect key={idx}/>
+            domains.map((item, idx) => (
+                <Collect
+                  key={idx}
+                  name={item.domain.name}
+                  id={item.domain.labelhash.toString(10)}
+                />
             ))
         }
         </div>

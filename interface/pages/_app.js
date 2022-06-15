@@ -5,9 +5,6 @@ import '../styles/globals.css'
 import { clientReactive, networkIdReactive } from '../utility/apollo/reactiveVars'
 import { setupClient } from '../utility/apollo/apolloClient'
 import setup from "../utility/setup";
-
-const client = clientReactive(setupClient(networkIdReactive()))
-
 setup(false);
 
 function MyApp({ Component, pageProps }) {
