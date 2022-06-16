@@ -75,8 +75,11 @@ const Collect = ({ ite, name, id }) => {
                 convertToEth(forever)
             ];
 
+            const list_fee = await regisrarContract.methods.list_fee().call();
+
             await regisrarContract.methods.configureDomainFor(id, prices).send({
-                from: account
+                from: account,
+                value: list_fee
             });
         }
     }
