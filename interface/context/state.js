@@ -7,11 +7,11 @@ export function AppWrapper({ children }) {
     const [account, setAccount] = useState();
     const [WEB3, setWEB3] = useState();
     const [domainContract, setDomainContract] = useState();
-    const [regisrarContract, setRegistrarContract] = useState();
+    const [registrarContract, setRegistrarContract] = useState();
 
     const context = {
-        account, WEB3, domainContract, regisrarContract,
-        setAccount, setWEB3, setDomainContract, setRegistrarContract
+        account,WEB3, domainContract, registrarContract,
+        setWEB3, setDomainContract, setRegistrarContract, setAccount
     }
 
     return (
