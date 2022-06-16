@@ -18,7 +18,7 @@ function Layout({ children }) {
                         <Link href="/" className="shadow-lg hover:shadow-cyan-500/50">
                             <a>
                                 <Image
-                                    src="/logo.svg"
+                                    src="/logo.png"
                                     width="100"
                                     height="100"
                                     alt=""
