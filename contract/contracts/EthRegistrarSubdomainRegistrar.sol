@@ -62,15 +62,13 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
     ENS public ens;
 
-    
-
     uint256 public reserve_fee = 500;
     uint256 public list_fee = 0.01 ether;
 
     address payable treasury;
 
     mapping (bytes32 => Domain) public domains;
-    mapping (address => bytes32[]) public labels;
+    mapping (address => bytes32[]) labels;
     mapping (string => Reserve) public reserves;
 
     modifier owner_only(bytes32 label) {
@@ -95,6 +93,10 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         registrar = ens.owner(TLD_NODE);
         registrarOwner = msg.sender;
         treasury = payable(msg.sender);
+    }
+
+    function queryLabels(address _owner) public view returns(bytes32[] memory) {
+        return labels[_owner];
     }
 
     function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, Resolver resolver) internal {
