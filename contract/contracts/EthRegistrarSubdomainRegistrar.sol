@@ -223,15 +223,21 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
      */
     function unlistDomain(string memory name) public owner_only(keccak256(bytes(name))) {
         bytes32 label = keccak256(bytes(name));
-        Domain storage domain = domains[label];
+        Domain memory domain = domains[label];
         require(domain.reserve == 0, "existing reserve yet");
 
-        emit DomainUnlisted(label);
+        BaseRegistrar(registrar).setApprovalForAll(address(this), true);
+        BaseRegistrar(registrar).transferFrom(address(this), msg.sender, uint256(label));
+        BaseRegistrar(registrar).reclaim(uint256(label), msg.sender);
 
-        domain.name = '';
-        domain.price = [0,0,0,0];
-        domain.existed = false;
-        domain.index = 0;
+        if (domain.index == labels[msg.sender].length - 1) delete labels[msg.sender][domain.index];
+        else {
+            labels[msg.sender][domain.index] = labels[msg.sender][labels[msg.sender].length - 1];
+            delete labels[msg.sender][labels[msg.sender].length - 1];
+        }
+
+        delete domains[label];
+        emit DomainUnlisted(label);
     }
 
     /**
