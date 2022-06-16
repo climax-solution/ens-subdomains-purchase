@@ -45,7 +45,6 @@ function Layout({ children }) {
                                 </svg>
                                 <Link href="/pending" className="text-sm  ml-2">Pending List</Link>
                             </div>
-                            <div className="py-1 px-3 bg-sky-700 rounded text-white flex items-center justify-center text-xs">5</div>
                         </li>
                         <li className={"flex w-full justify-between cursor-pointer items-center mb-6 " + ((path.slice(1)).indexOf("collected") == 0 ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
                             <div className="flex items-center">
