@@ -69,9 +69,9 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
     address payable treasury;
 
-    mapping (bytes32 => Domain) domains;
-    mapping (address => bytes32[]) labels;
-    mapping (string => Reserve) reserves;
+    mapping (bytes32 => Domain) public domains;
+    mapping (address => bytes32[]) public labels;
+    mapping (string => Reserve) public reserves;
 
     modifier owner_only(bytes32 label) {
         require(owner(label) == msg.sender);

@@ -15,7 +15,6 @@ const EthRegistrarSubdomainRegistrar = artifacts.require("EthRegistrarSubdomainR
 
 const ens_address = "0x00000000000c2e074ec69a0dfb2997ba6c7d2e1e";
 module.exports = async function (deployer, network, accounts) {
-  console.log('network =>',namehash.hash("eth"));
 
   // await deployer.deploy(ENSRegistry);
   // const ens = await ENSRegistry.deployed()
