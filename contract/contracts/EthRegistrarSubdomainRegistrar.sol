@@ -67,9 +67,9 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
     address payable treasury;
 
-    mapping (bytes32 => Domain) public domains;
+    mapping (bytes32 => Domain) domains;
     mapping (address => bytes32[]) labels;
-    mapping (string => Reserve) public reserves;
+    mapping (string => Reserve) reserves;
 
     modifier owner_only(bytes32 label) {
         require(owner(label) == msg.sender);
@@ -93,10 +93,6 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         registrar = ens.owner(TLD_NODE);
         registrarOwner = msg.sender;
         treasury = payable(msg.sender);
-    }
-
-    function queryLabels(address _owner) public view returns(bytes32[] memory) {
-        return labels[_owner];
     }
 
     function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, Resolver resolver) internal {
@@ -276,6 +272,18 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         emit NewRegistration(label, subdomain, subdomainOwner, treasury, domain.price[_reserve.subscription]);
     }
 
+    function queryDomain(bytes32 name) public view returns(Domain memory) {
+        return domains[name];
+    }
+
+    function queryLabels(address _owner) public view returns(bytes32[] memory) {
+        return labels[_owner];
+    }
+    
+    function queryReserves(string memory name) public view returns(Reserve memory) {
+        return reserves[name];
+    }
+    
     function reserve(bytes32 label, string calldata subdomain, uint subscription) external payable {
         require(domains[label].existed, "no domain listed");
         require(reserves[subdomain].domain == "", "someone already requested");
