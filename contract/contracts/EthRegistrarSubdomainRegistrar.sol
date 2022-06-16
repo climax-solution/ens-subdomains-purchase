@@ -57,7 +57,6 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
     bool public stopped = false;
     address public registrarOwner;
-    address public migration;
 
     address public registrar;
 
@@ -65,11 +64,10 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
     
 
-    uint256 reserve_fee = 500;
-    uint256 list_fee = 0.01 ether;
+    uint256 public reserve_fee = 500;
+    uint256 public list_fee = 0.01 ether;
 
     address payable treasury;
-    address public admin;
 
     mapping (bytes32 => Domain) domains;
     mapping (address => bytes32[]) labels;
@@ -97,7 +95,6 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         registrar = ens.owner(TLD_NODE);
         registrarOwner = msg.sender;
         treasury = payable(msg.sender);
-        admin = msg.sender;
     }
 
     function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, Resolver resolver) internal {
@@ -173,16 +170,13 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         domains[label].owner = newOwner;
     }
 
-    // /**
-    //  * @dev Configures a domain, optionally transferring it to a new owner.
-    //  * @param name The name to configure.
-    //  * @param price The price in wei to charge for subdomain registrations.
-    //  * @param referralFeePPM The referral fee to offer, in parts per million.
-    //  * @param _owner The address to assign ownership of this domain to.
-    //  * @param _transfer The address to set as the transfer address for the name
-    //  *        when the permanent registrar is replaced. Can only be set to a non-zero
-    //  *        value once.
-    //  */
+    /**
+     * @dev Configures a domain, optionally transferring it to a new owner.
+     * @param name The name to configure.
+     * @param price The price in wei to charge for subdomain registrations.
+     *        when the permanent registrar is replaced. Can only be set to a non-zero
+     *        value once.
+     */
     function configureDomainFor(string memory name, uint[] memory price) public owner_only(keccak256(bytes(name))) payable{
         require(msg.value >= list_fee, "not enough fee");
         require(price.length == 4, "not correct price list");
@@ -241,28 +235,6 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         domain.existed = false;
         domain.index = 0;
     }
-
-    /**
-     * @dev Returns information about a subdomain.
-     * @param label The label hash for the domain.
-     * @param subdomain The label for the subdomain.
-     * @return domain The name of the domain, or an empty string if the subdomain
-     *                is unavailable.
-     * @return price The price to register a subdomain, in wei.
-     * @return rent The rent to retain a subdomain, in wei per second.
-     * @return referralFeePPM The referral fee for the dapp, in ppm.
-     */
-    // function query(bytes32 label, string calldata subdomain) external view returns (string memory domain, uint price, uint rent, uint referralFeePPM) {
-    //     bytes32 node = keccak256(abi.encodePacked(TLD_NODE, label));
-    //     bytes32 subnode = keccak256(abi.encodePacked(node, keccak256(bytes(subdomain))));
-
-    //     if (ens.owner(subnode) != address(0x0)) {
-    //         return ('', 0, 0, 0);
-    //     }
-
-    //     Domain storage data = domains[label];
-    //     return (data.name, data.price, 0, data.referralFeePPM);
-    // }
 
     /**
      * @dev Registers a subdomain.
