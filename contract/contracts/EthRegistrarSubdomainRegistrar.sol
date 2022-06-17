@@ -42,8 +42,9 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         address payable owner;
         uint[] price;
         bool existed;
-        uint index;
-        uint reserve;
+        uint entire_index;
+        uint label_index;
+        string[] reserves;
     }
 
     struct Reserve {
@@ -57,8 +58,8 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     bytes32 constant public TLD_NODE = 0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae;
 
     bool public stopped = false;
-    address public registrarOwner;
 
+    address public registrarOwner;
     address public registrar;
 
     ENS public ens;
@@ -68,10 +69,10 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
     address payable treasury;
 
-    mapping (bytes32 => Domain) domains;
+    bytes32[] public domains;
+    mapping (bytes32 => Domain) domain_property;
     mapping (address => bytes32[]) labels;
-    mapping (bytes32 => string[]) reserves;
-    mapping (string => Reserve) existence_reserve;
+    mapping (string => Reserve) reserve_property;
 
     modifier owner_only(bytes32 label) {
         require(owner(label) == msg.sender, "not domain owner");
@@ -120,17 +121,6 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     }
 
     /**
-     * @dev Sets the resolver record for a name in ENS.
-     * @param name The name to set the resolver for.
-     * @param resolver The address of the resolver
-     */
-    function setResolver(string memory name, address resolver) public owner_only(keccak256(bytes(name))) {
-        bytes32 label = keccak256(bytes(name));
-        bytes32 node = keccak256(abi.encodePacked(TLD_NODE, label));
-        ens.setResolver(node, resolver);
-    }
-
-    /**
      * @dev Stops the registrar, disabling configuring of new domains.
      */
     function stop() public not_stopped registrar_owner_only {
@@ -151,23 +141,11 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
      * @return The address owning the deed.
      */
     function owner(bytes32 label) public view returns (address) {
-        if (domains[label].owner != address(0x0)) {
-            return domains[label].owner;
-        }
+        // if (domain_property[label].owner != address(0x0)) {
+        //     return domain_property[label].owner;
+        // }
 
         return BaseRegistrar(registrar).ownerOf(uint256(label));
-    }
-
-    /**
-     * @dev Transfers internal control of a name to a new account. Does not update
-     *      ENS.
-     * @param name The name to transfer.
-     * @param newOwner The address of the new owner.
-     */
-    function transfer(string memory name, address payable newOwner) public owner_only(keccak256(bytes(name))) {
-        bytes32 label = keccak256(bytes(name));
-        emit OwnerChanged(label, domains[label].owner, newOwner);
-        domains[label].owner = newOwner;
     }
 
     /**
@@ -181,37 +159,36 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         require(BaseRegistrar(registrar).isApprovedForAll(msg.sender, address(this)), "not approved");
         require(msg.value >= list_fee, "not enough fee");
         require(price.length == 4, "not correct price list");
-
+        
         treasury.transfer(msg.value);
 
         bytes32 label = keccak256(bytes(name));
-        Domain storage domain = domains[label];
-
-        // if (BaseRegistrar(registrar).ownerOf(uint256(label)) != address(this)) {
-        //     BaseRegistrar(registrar).transferFrom(msg.sender, address(this), uint256(label));
-        //     BaseRegistrar(registrar).reclaim(uint256(label), address(this));
-        // }
+        Domain storage domain = domain_property[label];
 
         if (address(domain.owner) != msg.sender) {
             domain.owner = payable(msg.sender);
         }
 
+        if (domains[domain.entire_index] != label) {
+            domain.entire_index = domains.length;
+            domains.push(label);
+        }
+
         if (keccak256(bytes(domain.name)) != label) {
-            // New listing
             domain.name = name;
         }
 
         domain.price = price;
         if (!domain.existed) {
             labels[msg.sender].push(label);
-            domain.index = labels[msg.sender].length;
+            domain.label_index = labels[msg.sender].length;
         }
 
         else {
-            if (labels[msg.sender][domain.index] != label) {
-                if (labels[msg.sender].length < domain.index) {
+            if (labels[msg.sender][domain.label_index] != label) {
+                if (labels[msg.sender].length < domain.label_index) {
                     labels[msg.sender].push(label);
-                    domain.index = labels[msg.sender].length;
+                    domain.label_index = labels[msg.sender].length;
                 }
             }
         }
@@ -226,20 +203,12 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
      */
     function unlistDomain(string memory name) public owner_only(keccak256(bytes(name))) {
         bytes32 label = keccak256(bytes(name));
-        Domain memory domain = domains[label];
-        require(domain.reserve == 0, "existing reserve yet");
+        Domain memory domain = domain_property[label];
+        require((domain.reserves).length == 0, "existing reserve yet");
 
-        // BaseRegistrar(registrar).setApprovalForAll(address(this), true);
-        // BaseRegistrar(registrar).transferFrom(address(this), msg.sender, uint256(label));
-        // BaseRegistrar(registrar).reclaim(uint256(label), msg.sender);
+        if (domains[domain.entire_index] == label) delete domains[domain.entire_index];
+        if (labels[domain.owner][domain.label_index] == label) delete labels[domain.owner][domain.label_index];
 
-        if (domain.index == labels[msg.sender].length - 1) delete labels[msg.sender][domain.index];
-        else {
-            labels[msg.sender][domain.index] = labels[msg.sender][labels[msg.sender].length - 1];
-            delete labels[msg.sender][labels[msg.sender].length - 1];
-        }
-
-        delete domains[label];
         emit DomainUnlisted(label);
     }
 
@@ -250,8 +219,8 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
      */
 
     function register(bytes32 label, string calldata subdomain, address resolver) external not_stopped owner_only(label) {
-        Reserve memory _reserve = existence_reserve[subdomain];
-        Domain memory domain = domains[label];
+        Reserve memory _reserve = reserve_property[subdomain];
+        Domain memory domain = domain_property[label];
 
         require(_reserve.owner != address(0), "no reserved");
         require(_reserve.domain == label, "not matched domain");
@@ -281,8 +250,12 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         emit NewRegistration(label, subdomain, subdomainOwner, treasury, domain.price[_reserve.subscription]);
     }
 
+    function queryEntireDomains() public view returns(bytes32[] memory) {
+        return domains;
+    }
+
     function queryDomain(bytes32 name) public view returns(Domain memory) {
-        return domains[name];
+        return domain_property[name];
     }
 
     function queryLabels(address _owner) public view returns(bytes32[] memory) {
@@ -290,29 +263,29 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     }
     
     function queryReservesList(bytes32 label) public view returns(string[] memory) {
-        return reserves[label];
+        return domain_property[label].reserves;
     }
 
     function queryReserves(string memory name) public view returns(Reserve memory) {
-        return existence_reserve[name];
+        return reserve_property[name];
     }
     
     function reserveSubdomain(bytes32 label, string calldata subdomain, uint subscription) external payable {
-        require(domains[label].existed, "no domain listed");
-        require(existence_reserve[subdomain].domain == "", "someone already requested");
-        require(msg.value >= domains[label].price[subscription], "not enough fee");
+        require(domain_property[label].existed, "no domain listed");
+        require(reserve_property[subdomain].domain == "", "someone already requested");
+        require(msg.value >= domain_property[label].price[subscription], "not enough fee");
 
-        reserves[label].push(subdomain);
-        existence_reserve[subdomain] = Reserve(label, msg.sender, subscription, reserves[label].length);
-        domains[label].reserve = domains[label].reserve ++;
+        string[] storage reserves = domain_property[label].reserves;
+        reserves.push(subdomain);
+        reserve_property[subdomain] = Reserve(label, msg.sender, subscription, reserves.length);
     }
 
     function declineSubdomain(string calldata subdomain) external {
-        Reserve memory reserve = existence_reserve[subdomain];
+        Reserve memory reserve = reserve_property[subdomain];
         require(reserve.owner != address(0), "no reserve exist");
         require(reserve.owner == msg.sender || msg.sender == owner(reserve.domain), "no reserve exist");
-        delete existence_reserve[subdomain];
-        delete reserves[reserve.domain][reserve.index];
+        delete reserve_property[subdomain];
+        delete domain_property[reserve.domain].reserves[reserve.index];
     }
 
     function updateListFee(uint _fee) external registrar_owner_only {
