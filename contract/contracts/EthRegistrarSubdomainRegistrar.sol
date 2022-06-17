@@ -75,7 +75,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     mapping (string => Reserve) reserve_property;
 
     modifier owner_only(bytes32 label) {
-        require(owner(label) == msg.sender, "not domain owner");
+        require(owner(label) == msg.sender);
         _;
     }
 
@@ -85,7 +85,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     }
 
     modifier registrar_owner_only() {
-        require(msg.sender == registrarOwner, "not registrar owner");
+        require(msg.sender == registrarOwner);
         _;
     }
 
