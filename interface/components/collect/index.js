@@ -2,8 +2,7 @@ import { useState, Fragment, useRef, useEffect } from "react";
 import { Dialog, Transition } from '@headlessui/react'
 import { CloudUploadIcon } from '@heroicons/react/outline'
 import axios from "axios";
-import { gql, useQuery } from "@apollo/client";
-import getWeb3 from "../../utility/getWeb3";
+import { gql, useQuery  } from "@apollo/client";
 import { useAppContext } from "../../context/state";
 
 const NETWORK_INFORMATION_QUERY = gql`
@@ -17,9 +16,9 @@ const NETWORK_INFORMATION_QUERY = gql`
   }
 `
 
-const Collect = ({ ite, name, id }) => {
+const Collect = ({ labelName, name, id, listed }) => {
 
-    const { account, domainContract, regisrarContract } = useAppContext();
+    const { account, WEB3, domainContract, registrarContract } = useAppContext();
 
     const [isOpen, setOpenModal] = useState(false);
     const [avatar, setAvatar] = useState("https://openseauserdata.com/files/66b5f0d3387b8fc662a2d6d19468c863.svg");
@@ -32,22 +31,13 @@ const Collect = ({ ite, name, id }) => {
 
     const {
         data: { network }
-    } = useQuery(NETWORK_INFORMATION_QUERY)
+    } = useQuery (NETWORK_INFORMATION_QUERY)
 
     useEffect(() => {
         if (name && network) {
             fetchAvatar();
         }
     }, [name, network]);
-
-    useEffect(() => {
-        async function get() {
-            await getWeb3();
-        }
-        
-        get();
-
-    }, []);
 
     const fetchAvatar = async() => {
         await axios.get(`https://metadata.ens.domains/${network}/${process.env.ENSDomain}/${id}`).then(res => {
@@ -59,11 +49,11 @@ const Collect = ({ ite, name, id }) => {
     }
 
     const listDomain = async() => {
-        if (domainContract && regisrarContract && account ) {
-            const allowance = await domainContract.methods.getApproved(id.toString(0)).call();
-            console.log(allowance);
-            if (allowance.toLowerCase() != process.env.Registrar.toLowerCase()) {
-                await domainContract.methods.approve(process.env.Registrar, id.toString(10)).send({
+        if (domainContract && registrarContract && account ) {
+            const isApprovedForAll = await domainContract.methods.isApprovedForAll(account, process.env.Registrar).call();
+            console.log(isApprovedForAll);
+            if (isApprovedForAll == false) {
+                await domainContract.methods.setApprovalForAll(process.env.Registrar, true).send({
                     from: account
                 });
             }
@@ -75,13 +65,19 @@ const Collect = ({ ite, name, id }) => {
                 convertToEth(forever)
             ];
 
-            const list_fee = await regisrarContract.methods.list_fee().call();
+            const list_fee = await registrarContract.methods.list_fee().call();
 
-            await regisrarContract.methods.configureDomainFor(id, prices).send({
+            await registrarContract.methods.configureDomainFor(labelName, prices).send({
                 from: account,
                 value: list_fee
             });
         }
+    }
+
+    const deList = async() => {
+        await registrarContract.methods.unlistDomain(labelName).send({
+            from: account
+        });
     }
 
     const convertToEth = (price) => {
@@ -109,8 +105,12 @@ const Collect = ({ ite, name, id }) => {
                     </span>
                     <h5 className="mb-1 mt-5 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>
                     <div className="flex mt-4 space-x-3 lg:mt-6">
-                        <a href="#" className="inline-flex items-center py-2 px-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={() => setOpenModal(true)}>List</a>
-                        <a href="#" className="inline-flex items-center py-2 px-4 text-sm font-medium text-center text-gray-900 bg-white rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">Delist</a>
+                        {
+                            !listed ?
+                            <a href="#" className="inline-flex items-center py-2 px-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={() => setOpenModal(true)}>List</a>
+                            :
+                            <a href="#" className="inline-flex items-center py-2 px-4 text-sm font-medium text-center text-gray-900 bg-white rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700" onClick={deList}>Delist</a>
+                        }
                     </div>
                 </div>
             </div>

@@ -18,16 +18,20 @@ const NETWORK_INFORMATION_QUERY = gql`
 `
 
 function NetworkInformation() {
-  const { setAccount, setWEB3, setDomainContract, setRegistrarContract } = useAppContext();
+  const { setAccount, setNetwork, setWEB3, setDomainContract, setRegistrarContract } = useAppContext();
 
   const {
     data: { accounts, network }
-  } = useQuery(NETWORK_INFORMATION_QUERY)
+  } = useQuery (NETWORK_INFORMATION_QUERY)
 
   useEffect(() => {
     async function fetchInstance() {
       const { web3, ENSDomain, SubdomainReg } = await getWeb3();
+      const __accounts = await web3.eth.getAccounts();
+      console.log("__accounts", __accounts);
+      
       setAccount(accounts ? accounts[0] : '');
+      setNetwork(network);
       setWEB3(web3);
       setDomainContract(ENSDomain);
       setRegistrarContract(SubdomainReg);

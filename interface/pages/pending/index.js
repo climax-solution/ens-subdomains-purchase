@@ -19,7 +19,7 @@ const PendingList = () => {
 
     console.log("labels", list);
     return (
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 p-4'>
             {
                 list.map((item, idx) => (
                     <Reservation key={idx} label={item}/>
