@@ -75,7 +75,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     mapping (string => Reserve) reserve_property;
 
     modifier owner_only(bytes32 label) {
-        require(owner(label) == msg.sender);
+        require(owner(label) == msg.sender, "not domain owner");
         _;
     }
 
@@ -85,7 +85,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     }
 
     modifier registrar_owner_only() {
-        require(msg.sender == registrarOwner);
+        require(msg.sender == registrarOwner, "not registrar owner");
         _;
     }
 
@@ -156,7 +156,6 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
      *        value once.
      */
     function configureDomainFor(string memory name, uint[] memory price) public owner_only(keccak256(bytes(name))) payable {
-        require(BaseRegistrar(registrar).isApprovedForAll(msg.sender, address(this)), "not approved");
         require(msg.value >= list_fee, "not enough fee");
         require(price.length == 4, "not correct price list");
         
@@ -180,15 +179,15 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
         domain.price = price;
         if (!domain.existed) {
-            labels[msg.sender].push(label);
             domain.label_index = labels[msg.sender].length;
+            labels[msg.sender].push(label);
         }
 
         else {
             if (labels[msg.sender][domain.label_index] != label) {
                 if (labels[msg.sender].length < domain.label_index) {
-                    labels[msg.sender].push(label);
                     domain.label_index = labels[msg.sender].length;
+                    labels[msg.sender].push(label);
                 }
             }
         }
