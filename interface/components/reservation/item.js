@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "../../context/state";
 
-const ReserveItem = ({ name, prices, domain }) => {
-    const { WEB3, registrarContract } = useAppContext();
+const ReserveItem = ({ name, prices, domain, resolver }) => {
+
+    const { WEB3, account, registrarContract } = useAppContext();
     const [info, setInfo] = useState({});
     const [isLoading, setLoading] = useState(false);
 
@@ -16,6 +17,18 @@ const ReserveItem = ({ name, prices, domain }) => {
 
         fetchReserveItem();
     }, [name, registrarContract])
+
+    
+    const confirmSubdomain = async() => {
+        try {
+            await registrarContract.methods.register(info.domain, name, resolver).send({
+                from: account
+            });
+
+        } catch(err) {
+            console.log(err);
+        }
+    }
 
     return (
         <>
@@ -36,7 +49,10 @@ const ReserveItem = ({ name, prices, domain }) => {
                             <span>{domain}.eth</span>
                         </div>
                         <div className='flex gap-3'>
-                            <button className="p-5 border-2 border-sky-200 hover:border-sky-400 rounded-full">
+                            <button
+                                className="p-5 border-2 border-sky-200 hover:border-sky-400 rounded-full"
+                                onClick={confirmSubdomain}
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>

@@ -5,6 +5,7 @@ import { useAppContext } from '../../context/state';
 
 const ExploreDomains = () => {
     const [domains, setDomains] = useState([]);
+    const [isLoading, setLoading] = useState(true);
     const { registrarContract } = useAppContext();
 
     useEffect(() => {
@@ -14,17 +15,24 @@ const ExploreDomains = () => {
     }, [registrarContract]);
 
     const fetchDomains = async() => {
+      setLoading(true);
       const _domains = await registrarContract.methods.queryEntireDomains().call();
       console.log(_domains);
       setDomains(_domains);
+      setLoading(false);
     }
 
     return (
         <div className="flex flex-wrap gap-2 p-4">
             {
-                domains.map((item, idx) => (
-                    <Domain key={idx} labelhash={item}/>
-                ))
+              isLoading ? <Loader/>
+              :<>
+                {
+                  domains.map((item, idx) => (
+                      <Domain key={idx} labelhash={item}/>
+                  ))
+                }
+              </>
             }
         </div>
     )

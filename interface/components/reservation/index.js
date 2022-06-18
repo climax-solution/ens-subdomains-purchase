@@ -4,16 +4,20 @@ import ReserveItem from "./item";
 
 const Reservation = ({ label }) => {
 
-    const { registrarContract } = useAppContext();
+    const { WEB3, registrarContract } = useAppContext();
     const [name, setName] = useState('');
     const [list, setList] = useState([]);
     const [prices, setPrices] = useState({});
+    const [resolver, setResolver] = useState('');
 
     useEffect(() => {
         async function getReserves() {
             const _domain = await registrarContract.methods.queryDomain(label).call();
             const reserves = await registrarContract.methods.queryReservesList(label).call();
-            console.log(reserves);
+            const _resolver = await WEB3.eth.ens.getResolver(_domain.name + '.eth');
+            
+            // console.log("_resolver", _resolver)
+            setResolver(_resolver._address);
             setName(_domain.name);
             setPrices(_domain.price);
             setList(reserves);
@@ -32,6 +36,7 @@ const Reservation = ({ label }) => {
                             prices={prices}
                             key={idx}
                             domain={name}
+                            resolver={resolver}
                         />
                     )
                 })
