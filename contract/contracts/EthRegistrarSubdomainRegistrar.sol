@@ -196,7 +196,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
         require(_reserve.owner != address(0), "no reserved");
         require(_reserve.domain == label, "not matched domain");
-        require(keccak256(bytes(domain.name)) == label);
+        require(keccak256(bytes(domain.name)) == label, "not valid");
         require(!_reserve.accepted, "already build subdomain");
 
         uint256 total = domain.price[_reserve.subscription];
