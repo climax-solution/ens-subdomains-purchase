@@ -41,7 +41,6 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         string name;
         address payable owner;
         uint[] price;
-        bool existed;
         uint entire_index;
         uint label_index;
         string[] reserves;
@@ -100,17 +99,8 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
     function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, Resolver resolver) internal {
         // Get the subdomain so we can configure it
-        ens.setSubnodeOwner(node, label, address(this));
-
-        bytes32 subnode = keccak256(abi.encodePacked(node, label));
-        // Set the subdomain's resolver
-        ens.setResolver(subnode, address(resolver));
-
-        // Set the address record on the resolver
-        resolver.setAddr(subnode, subdomainOwner);
-
-        // Pass ownership of the new subdomain to the registrant
-        ens.setOwner(subnode, subdomainOwner);
+        uint64 ttl = ens.ttl(node);
+        ens.setSubnodeRecord(node, label, subdomainOwner, resolver, ttl);
     }
 
     function supportsInterface(bytes4 interfaceID) public pure returns (bool) {
@@ -156,41 +146,24 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
      *        value once.
      */
     function configureDomainFor(string memory name, uint[] memory price) public owner_only(keccak256(bytes(name))) payable {
+        bytes32 label = keccak256(bytes(name));
+
+        require(domain_property[label].owner != address(0), "already listed");
         require(msg.value >= list_fee, "not enough fee");
         require(price.length == 4, "not correct price list");
         
         treasury.transfer(msg.value);
 
-        bytes32 label = keccak256(bytes(name));
-        Domain storage domain = domain_property[label];
-
-        if (address(domain.owner) != msg.sender) {
-            domain.owner = payable(msg.sender);
-        }
-
-        if (domains[domain.entire_index] != label) {
-            domain.entire_index = domains.length;
-            domains.push(label);
-        }
-
-        if (keccak256(bytes(domain.name)) != label) {
-            domain.name = name;
-        }
-
+        Domain memory domain;
+        domain.name = name;
+        domain.owner = payable(msg.sender);
         domain.price = price;
-        if (!domain.existed) {
-            domain.label_index = labels[msg.sender].length;
-            labels[msg.sender].push(label);
-        }
+        domain.entire_index = domains.length;
+        domain.label_index = labels[msg.sender].length;
 
-        else {
-            if (labels[msg.sender][domain.label_index] != label) {
-                if (labels[msg.sender].length < domain.label_index) {
-                    domain.label_index = labels[msg.sender].length;
-                    labels[msg.sender].push(label);
-                }
-            }
-        }
+        domain_property[label] = domain;
+        labels[msg.sender].push(label);
+        domains.push(label);
 
         emit DomainConfigured(label);
     }
@@ -270,7 +243,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     }
     
     function reserveSubdomain(bytes32 label, string calldata subdomain, uint subscription) external payable {
-        require(domain_property[label].existed, "no domain listed");
+        require(address(domain_property[label].owner) != address(0), "no domain listed");
         require(reserve_property[subdomain].domain == "", "someone already requested");
         require(msg.value >= domain_property[label].price[subscription], "not enough fee");
 
