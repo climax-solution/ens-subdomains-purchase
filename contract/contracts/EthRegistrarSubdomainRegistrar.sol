@@ -97,10 +97,13 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         treasury = payable(msg.sender);
     }
 
-    function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, address resolver) public {
+    function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, address resolver, uint64 ttl) public {
         // Get the subdomain so we can configure it
-        uint64 ttl = ens.ttl(node);
         ens.setSubnodeRecord(node, label, subdomainOwner, resolver, ttl);
+    }
+
+    function getTTL(bytes32 node) public view returns(uint64) {
+        return ens.ttl(node);
     }
 
     function supportsInterface(bytes4 interfaceID) public pure returns (bool) {
@@ -215,9 +218,9 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
             domain.owner.transfer(total);
         }
 
-        doRegistration(domainNode, subdomainLabel, subdomainOwner, resolver);
+        doRegistration(domainNode, subdomainLabel, subdomainOwner, resolver, 0);
         reserve_property[subdomain].accepted = true;
-        
+
         emit NewRegistration(label, subdomain, subdomainOwner, treasury, domain.price[_reserve.subscription]);
     }
 
