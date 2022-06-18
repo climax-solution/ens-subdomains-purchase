@@ -94,7 +94,7 @@ const Collect = ({ labelName, name, id, listed }) => {
 
     return (
         <>
-            <div className="sm:max-w-xs bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
+            <div className="sm:max-w-xs w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <div className="flex flex-col items-center pb-10">
                     <span className="w-full aspect-square">
                         <img

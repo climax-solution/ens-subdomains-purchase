@@ -4,7 +4,7 @@ import { useAppContext } from '../../context/state';
 
 const PendingList = () => {
     const [list, setList] = useState([]);
-    const { account, registrarContract } = useAppContext();
+    const { account, registrarContract, setLoading } = useAppContext();
 
     useEffect(() => {
         async function getLabels() {
@@ -17,7 +17,6 @@ const PendingList = () => {
 
     }, [registrarContract]);
 
-    console.log("labels", list);
     return (
         <div className='flex flex-col gap-3 p-4'>
             {

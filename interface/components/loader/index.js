@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 const Loader = () => (
-    <div className="h-screen flex flex-col items-center">
+    <div className="h-screen flex flex-col justify-center w-full items-center">
         <Head>
             <style>{`
             .ldio-603wa416smh-st2{opacity:0.8;}

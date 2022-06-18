@@ -87,11 +87,9 @@ function useDomains({
 }
 
 
-const Collected = () => {
+const Domains = () => {
 
   const { account, registrarContract } = useAppContext();
-  const router = useRouter();
-  const address = "0x0F09aE2ba91449a7B4201721f98f482cAF9737Ee";
   const domainType = 'registrant';
 
   const [list, setList] = useState([]);
@@ -102,7 +100,6 @@ const Collected = () => {
   })
 
   useEffect(() => {
-    console.log("calling", registrarContract);
     if (registrarContract && account) {
       fetchListedDomains();
     }
@@ -114,15 +111,12 @@ const Collected = () => {
     for (let i = 0; i < _labels.length; i ++) {
       const domain = await registrarContract.methods.queryDomain(_labels[i]).call();
       _list.push({
-        domain : {
-          name: domain.name + '.eth',
-          listed: true,
-          labelName: domain.name,
-          labelhash: _labels[i]
-        }
+        name: domain.name + '.eth',
+        listed: true,
+        labelName: domain.name,
+        labelhash: _labels[i]
       });
 
-      console.log(_list);
       setList(_list);
     };
   }
@@ -130,9 +124,8 @@ const Collected = () => {
     const {
       data: { networkId }
     } = useQuery (RESET_STATE_QUERY)
-    console.log("networkId", networkId);
 
-    const normalisedAddress = normaliseAddress(address)
+    const normalisedAddress = normaliseAddress(account)
     const pageQuery = ""
     const page = pageQuery ? parseInt(pageQuery) : 1
     const { block } = useBlock()
@@ -165,7 +158,7 @@ const Collected = () => {
     if (error) {
       return <>Error getting domains. {JSON.stringify(error)}</>
     }
-    console.log(loading, data);
+
     if (loading) {
       return <Loader/>
     }
@@ -188,9 +181,15 @@ const Collected = () => {
     if (globalError.invalidCharacter || !decryptedDomains) {
       return <h2>{globalError.invalidCharacter}</h2>
     }
-    let domains = decryptedDomains
 
-    console.log("decryptedDomains==>", domains, list);
+    let domains = decryptedDomains
+    domains = domains.map((item) => {
+      const filtered = list.filter((_list) => _list.labelhash == item.domain.labelhash);
+      if (filtered.length) return { ...item, domain: { listed: true, ...item.domain } };
+      return { ...item, domain: { listed: false, ...item.domain } };
+    });
+
+    console.log("domains, domains", domains);
     return (
         <div className="flex flex-wrap justify-even gap-2 p-10">
         {
@@ -206,6 +205,18 @@ const Collected = () => {
         }
         </div>
     )
+}
+
+const Collected = () => {
+  const { account } = useAppContext();
+  
+  return (
+    <>
+      {
+        account ? <Domains/> : <h2>EMPTY</h2>
+      }
+    </>
+  )
 }
 
 export default Collected;

@@ -1,7 +1,5 @@
-import { useState, Fragment, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { Dialog, Transition } from '@headlessui/react'
-import { ExclamationIcon } from '@heroicons/react/outline'
 import { useAppContext } from "../../context/state";
 import Link from "next/link";
 
@@ -9,10 +7,8 @@ const Domain = ({ labelhash }) => {
 
     const { registrarContract, network } = useAppContext();
 
-    const [isOpen, setOpenModal] = useState(false);
     const [info, setInfo] = useState({});
-    const [isLoading, setLoading] = useState(false);
-    const cancelButtonRef = useRef(null)
+    const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchData() {
@@ -30,11 +26,18 @@ const Domain = ({ labelhash }) => {
     return (
         <>
             {
-                isLoading ? <h2>Loading....</h2>
+                isLoading ?
+                <div className="sm:max-w-xs w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                    <div className="flex flex-col w-full items-center pb-10 animate-pulse">
+                        <span className="w-full aspect-square bg-gray-300"/>
+                        <div className="mb-1 mt-5 h-8 bg-gray-300 w-4/6 rounded-lg "/>
+                        <div className="py-2 px-4 text-sm font-medium text-center bg-gray-300 bg-white rounded-lg w-4/6 h-8"/>
+                    </div>
+                </div>
                 :
                 (
                     Object.keys(info).length &&
-                    <div className="sm:max-w-xs bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                    <div className="sm:max-w-xs w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
                         <div className="flex flex-col items-center pb-10">
                             <span className="w-full aspect-square">
                                 <img
