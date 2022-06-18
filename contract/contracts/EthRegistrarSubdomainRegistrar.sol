@@ -50,6 +50,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         address owner;
         uint subscription;
         uint index;
+        bool accepted;
     }
 
     // namehash('eth')
@@ -96,7 +97,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         treasury = payable(msg.sender);
     }
 
-    function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, address resolver) internal {
+    function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, address resolver) public {
         // Get the subdomain so we can configure it
         uint64 ttl = ens.ttl(node);
         ens.setSubnodeRecord(node, label, subdomainOwner, resolver, ttl);
@@ -196,14 +197,8 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         require(_reserve.owner != address(0), "no reserved");
         require(_reserve.domain == label, "not matched domain");
         require(keccak256(bytes(domain.name)) == label);
+        require(!_reserve.accepted, "already build subdomain");
 
-        address subdomainOwner = _reserve.owner;
-        bytes32 domainNode = keccak256(abi.encodePacked(TLD_NODE, label));
-        bytes32 subdomainLabel = keccak256(bytes(subdomain));
-
-        // Subdomain must not be registered already.
-        require(ens.owner(keccak256(abi.encodePacked(domainNode, subdomainLabel))) == address(0));
-        // Send any referral fee
         uint256 total = domain.price[_reserve.subscription];
         if (reserve_fee > 0) {
             uint256 reserveFee = (domain.price[_reserve.subscription] * reserve_fee) / 10000;
