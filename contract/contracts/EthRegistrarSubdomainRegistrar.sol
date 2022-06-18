@@ -202,7 +202,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         address subdomainOwner = _reserve.owner;
         bytes32 domainNode = keccak256(abi.encodePacked(TLD_NODE, label));
         bytes32 subdomainLabel = keccak256(bytes(subdomain));
-        
+
         uint256 total = domain.price[_reserve.subscription];
         if (reserve_fee > 0) {
             uint256 reserveFee = (domain.price[_reserve.subscription] * reserve_fee) / 10000;
@@ -216,7 +216,8 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         }
 
         doRegistration(domainNode, subdomainLabel, subdomainOwner, resolver);
-
+        reserve_property[subdomain].accepted = true;
+        
         emit NewRegistration(label, subdomain, subdomainOwner, treasury, domain.price[_reserve.subscription]);
     }
 
@@ -247,7 +248,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
 
         string[] storage reserves = domain_property[label].reserves;
         reserves.push(subdomain);
-        reserve_property[subdomain] = Reserve(label, msg.sender, subscription, reserves.length);
+        reserve_property[subdomain] = Reserve(label, msg.sender, subscription, reserves.length, false);
     }
 
     function declineSubdomain(string calldata subdomain) external {
