@@ -199,6 +199,10 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         require(keccak256(bytes(domain.name)) == label, "not valid");
         require(!_reserve.accepted, "already build subdomain");
 
+        address subdomainOwner = _reserve.owner;
+        bytes32 domainNode = keccak256(abi.encodePacked(TLD_NODE, label));
+        bytes32 subdomainLabel = keccak256(bytes(subdomain));
+        
         uint256 total = domain.price[_reserve.subscription];
         if (reserve_fee > 0) {
             uint256 reserveFee = (domain.price[_reserve.subscription] * reserve_fee) / 10000;
