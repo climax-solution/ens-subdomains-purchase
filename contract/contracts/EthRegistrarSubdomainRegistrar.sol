@@ -147,7 +147,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
     function configureDomainFor(string memory name, uint[] memory price) public owner_only(keccak256(bytes(name))) payable {
         bytes32 label = keccak256(bytes(name));
 
-        require(domain_property[label].owner != address(0), "already listed");
+        require(domain_property[label].owner == address(0), "already listed");
         require(msg.value >= list_fee, "not enough fee");
         require(price.length == 4, "not correct price list");
         
