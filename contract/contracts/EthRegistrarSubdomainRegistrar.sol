@@ -4,7 +4,6 @@ pragma solidity ^0.8.4;
 
 import "@ensdomains/ens-contracts/contracts/ethregistrar/BaseRegistrar.sol";
 import "@ensdomains/ens-contracts/contracts/registry/ENS.sol";
-import "./Resolver.sol";
 import "./RegistrarInterface.sol";
 
 /**
@@ -97,7 +96,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         treasury = payable(msg.sender);
     }
 
-    function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, Resolver resolver) internal {
+    function doRegistration(bytes32 node, bytes32 label, address subdomainOwner, address resolver) internal {
         // Get the subdomain so we can configure it
         uint64 ttl = ens.ttl(node);
         ens.setSubnodeRecord(node, label, subdomainOwner, resolver, ttl);
@@ -217,7 +216,7 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
             domain.owner.transfer(total);
         }
 
-        doRegistration(domainNode, subdomainLabel, subdomainOwner, Resolver(resolver));
+        doRegistration(domainNode, subdomainLabel, subdomainOwner, resolver);
 
         emit NewRegistration(label, subdomain, subdomainOwner, treasury, domain.price[_reserve.subscription]);
     }
