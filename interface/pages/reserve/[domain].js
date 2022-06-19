@@ -59,7 +59,7 @@ const Pricing = () => {
     }, [registrarContract, domain]);
 
     return (
-        <div className="flex gap-2 p-4 h-screen justify-center items-center">
+        <div className="flex flex-wrap gap-2 p-4 justify-evenly h-screen items-center">
             {
                 isLoading ? <Loader/>
                 : <>

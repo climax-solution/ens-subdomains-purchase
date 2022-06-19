@@ -14,6 +14,9 @@ module.exports = {
       '2xl': '1536px'
     },
     extend: {
+      maxWidth: {
+        xxs: "300px"
+      }
     }
   },
   plugins: [
