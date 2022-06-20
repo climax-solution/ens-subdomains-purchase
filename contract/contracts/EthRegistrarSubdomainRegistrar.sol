@@ -129,7 +129,8 @@ contract EthRegistrarSubdomainRegistrar is RegistrarInterface {
         treasury.transfer(msg.value);
 
         domain_index[label] = domains.length;
-        domains.push(Domain(name, payable(msg.sender), price));
+        Domain memory new_domain = Domain(name, payable(msg.sender), price);
+        domains.push(new_domain);
 
         emit DomainConfigured(label);
     }
