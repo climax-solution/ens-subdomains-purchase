@@ -4,6 +4,7 @@ import { CloudUploadIcon } from '@heroicons/react/outline'
 import axios from "axios";
 import { gql, useQuery  } from "@apollo/client";
 import { useAppContext } from "../../context/state";
+import GearLoading from "../loader/gear";
 
 const NETWORK_INFORMATION_QUERY = gql`
   query getNetworkInfo @client {
@@ -16,11 +17,13 @@ const NETWORK_INFORMATION_QUERY = gql`
   }
 `
 
-const Collect = ({ labelName, name, id, listed }) => {
+const Collect = ({ labelName, name, id, listed, update }) => {
 
     const { account, WEB3, domainContract, registrarContract } = useAppContext();
 
     const [isOpen, setOpenModal] = useState(false);
+    const [isLoading, setLoading] = useState(false);
+    const [isError, setError] = useState(false);
     const [avatar, setAvatar] = useState("https://openseauserdata.com/files/66b5f0d3387b8fc662a2d6d19468c863.svg");
     const cancelButtonRef = useRef(null);
 
@@ -50,34 +53,56 @@ const Collect = ({ labelName, name, id, listed }) => {
 
     const listDomain = async() => {
         if (domainContract && registrarContract && account ) {
-            const isApprovedForAll = await domainContract.methods.isApprovedForAll(account, process.env.Registrar).call();
-            console.log(isApprovedForAll);
-            if (isApprovedForAll == false) {
-                await domainContract.methods.setApprovalForAll(process.env.Registrar, true).send({
-                    from: account
-                });
+            if (oneM <= 0 || sixM <= 0 || oneY <= 0 || forever <= 0) {
+                setError(true);
+                return;
             }
+            setError(false);
+            setLoading(true);
+            try {
+                const isApprovedForAll = await domainContract.methods.isApprovedForAll(account, process.env.Registrar).call();
+                console.log(isApprovedForAll);
+                if (isApprovedForAll == false) {
+                    await domainContract.methods.setApprovalForAll(process.env.Registrar, true).send({
+                        from: account
+                    });
+                }
 
-            const prices = [
-                convertToEth(oneM),
-                convertToEth(sixM),
-                convertToEth(oneY),
-                convertToEth(forever)
-            ];
+                const prices = [
+                    convertToEth(oneM),
+                    convertToEth(sixM),
+                    convertToEth(oneY),
+                    convertToEth(forever)
+                ];
 
-            const list_fee = await registrarContract.methods.list_fee().call();
+                const list_fee = await registrarContract.methods.list_fee().call();
 
-            await registrarContract.methods.configureDomainFor(labelName, prices).send({
-                from: account,
-                value: list_fee
-            });
+                await registrarContract.methods.configureDomainFor(labelName, prices).send({
+                    from: account,
+                    value: list_fee
+                });
+                closeModal();
+            } catch(err) {
+                console.log(err);
+            }
+            setLoading(false);
+            update();
         }
     }
 
     const deList = async() => {
-        await registrarContract.methods.unlistDomain(labelName).send({
-            from: account
-        });
+        setLoading(true);
+        setOpenModal(true);
+        try {
+            await registrarContract.methods.unlistDomain(labelName).send({
+                from: account
+            });
+        } catch(err) {
+
+        }
+        setOpenModal(false);
+        setLoading(false);
+        update();
     }
 
     const convertToEth = (price) => {
@@ -94,6 +119,7 @@ const Collect = ({ labelName, name, id, listed }) => {
 
     return (
         <>
+            { isLoading ? <GearLoading/> : "" }
             <div className="sm:max-w-xs w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <div className="flex flex-col items-center pb-10">
                     <span className="w-full aspect-square">
@@ -116,7 +142,12 @@ const Collect = ({ labelName, name, id, listed }) => {
             </div>
 
             <Transition.Root show={isOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenModal}>
+                <Dialog
+                    as="div"
+                    className="relative z-10"
+                    initialFocus={cancelButtonRef}
+                    onClose={() => {}}
+                >
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -126,7 +157,7 @@ const Collect = ({ labelName, name, id, listed }) => {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity" />
                     </Transition.Child>
 
                     <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -160,7 +191,7 @@ const Collect = ({ labelName, name, id, listed }) => {
                                                     <div className="relative flex items-center">
                                                         <input
                                                             type="number"
-                                                            className="border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm border-gray-300 w-full outline-0 rounded-md col-span-6"
+                                                            className={`border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm w-full outline-0 rounded-md col-span-6 ${isError ? "border-red-300" : "border-gray-300"}`}
                                                             value={oneM}
                                                             onChange={(e) => setOneM(e.target.value)}
                                                         />
@@ -169,7 +200,7 @@ const Collect = ({ labelName, name, id, listed }) => {
                                                     <div className="relative flex items-center">
                                                         <input
                                                             type="number"
-                                                            className="border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm border-gray-300 w-full outline-0 rounded-md col-span-6"
+                                                            className={`border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm w-full outline-0 rounded-md col-span-6 ${isError ? "border-red-300" : "border-gray-300"}`}
                                                             value={sixM}
                                                             onChange={(e) => setSixM(e.target.value)}                                                        />
                                                         <span className="absolute right-2 p-2 border-2 rounded-lg shadow-md w-24 text-center">6 months</span>
@@ -177,7 +208,7 @@ const Collect = ({ labelName, name, id, listed }) => {
                                                     <div className="relative flex items-center">
                                                         <input
                                                             type="number"
-                                                            className="border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm border-gray-300 w-full outline-0 rounded-md col-span-6"
+                                                            className={`border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm w-full outline-0 rounded-md col-span-6 ${isError ? "border-red-300" : "border-gray-300"}`}
                                                             value={oneY}
                                                             onChange={(e) => setOneY(e.target.value)}
                                                         />
@@ -186,7 +217,7 @@ const Collect = ({ labelName, name, id, listed }) => {
                                                     <div className="relative flex items-center">
                                                         <input
                                                             type="number"
-                                                            className="border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm border-gray-300 w-full outline-0 rounded-md col-span-6"
+                                                            className={`border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm w-full outline-0 rounded-md col-span-6 ${isError ? "border-red-300" : "border-gray-300"}`}
                                                             value={forever}
                                                             onChange={(e) => setForever(e.target.value)}
                                                         />

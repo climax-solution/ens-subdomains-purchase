@@ -1,5 +1,5 @@
 const GearLoading = () => (
-    <div className="text-center py-16">
+    <div className="fixed flex items-center justify-center z-[9999] bg-gray-500 bg-opacity-75 top-0 left-0 right-0 bottom-0">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             xmlnsXlink="http://www.w3.org/1999/xlink"
