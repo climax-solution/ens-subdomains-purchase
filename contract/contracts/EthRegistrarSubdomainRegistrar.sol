@@ -237,6 +237,7 @@ contract EthRegistrarSubdomainRegistrar {
 
     function declineSubdomain(bytes32 label, string calldata subdomain) external {
         Exist memory reserve_key = reserve_indexes[label][subdomain];
+        uint256 domain_inx = domain_index[label].index;
         uint256 index = reserve_key.index;
 
         require(reserve_key.existed, "no reserved");
@@ -244,8 +245,12 @@ contract EthRegistrarSubdomainRegistrar {
         Reserve memory reserve = reserves[index];
         
         require(reserve.domain == label, "no domain exist");
+        require(keccak256(bytes(domains[domain_inx].name)) == label, "no domain exist");
         require(reserve.owner == msg.sender || msg.sender == owner(label), "no reserve exist");
 
+        Domain memory domain = domains[domain_inx];
+        payable(reserve.owner).transfer(domain.price[reserve.subscription]);
+        
         reserves[index] = reserves[reserves.length - 1];
         reserve_indexes[reserves[index].domain][reserves[index].name] = Exist(index, true);
 
@@ -259,5 +264,10 @@ contract EthRegistrarSubdomainRegistrar {
 
     function updateReserveFee(uint _fee) external registrar_owner_only {
         reserve_fee = _fee;
+    }
+
+    function updateTreasuryWallet(address account) external registrar_owner_only {
+        require(account != address(0), "not valid account");
+        treasury = payable(account);
     }
 }
