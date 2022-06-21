@@ -23,8 +23,8 @@ function Layout({ children }) {
                             <a>
                                 <Image
                                     src="/logo.png"
-                                    width="100"
-                                    height="100"
+                                    width="150"
+                                    height="150"
                                     alt=""
                                     className="logo-icon"
                                     onDragStart={ (e) => e.preventDefault() }

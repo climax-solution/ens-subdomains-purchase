@@ -15,7 +15,8 @@ module.exports = {
     },
     extend: {
       maxWidth: {
-        xxs: "300px"
+        xxs: "300px",
+        '15rem': "15rem"
       },
       zIndex: {
         '9999': '9999'

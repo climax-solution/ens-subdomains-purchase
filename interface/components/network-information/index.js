@@ -28,10 +28,11 @@ function NetworkInformation() {
     async function fetchInstance() {
       const { web3, ENSDomain, SubdomainReg } = await getWeb3();
       const __accounts = await web3.eth.getAccounts();
-      console.log("__accounts", __accounts);
+      const _network = await web3.eth.net.getNetworkType();
+      console.log("__accounts", __accounts, _network);
       
       setAccount(accounts ? accounts[0] : '');
-      setNetwork(network);
+      setNetwork(_network);
       setWEB3(web3);
       setDomainContract(ENSDomain);
       setRegistrarContract(SubdomainReg);

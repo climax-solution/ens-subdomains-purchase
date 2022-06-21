@@ -99,7 +99,7 @@ import {
       provider = providerObject
       return provider
     } catch (e) {
-      if (e.message.match(/Unsupported network/)) {
+      if (e?.message?.match(/Unsupported network/)) {
         globalErrorReactive({
           ...globalErrorReactive(),
           network: 'Unsupported Network'
