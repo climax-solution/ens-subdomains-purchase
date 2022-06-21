@@ -89,10 +89,11 @@ function useDomains({
 
 const Domains = () => {
 
-  const { account, registrarContract } = useAppContext();
+  const { WEB3, account, registrarContract } = useAppContext();
   const domainType = 'registrant';
 
   const [list, setList] = useState([]);
+  const [isUpdated, setUpdated] = useState(true);
   let [resultsPerPage] = useState(25);
   let [activeSort] = useState({
     type: 'expiryDate',
@@ -103,27 +104,27 @@ const Domains = () => {
     if (registrarContract && account) {
       fetchListedDomains();
     }
-  },[registrarContract]);
+  },[registrarContract, isUpdated]);
 
   const fetchListedDomains = async() => {
-    const _labels = await registrarContract.methods.queryLabels(account).call();
+    const domains = await registrarContract.methods.queryEntireDomains().call();
+    console.log("/////domains/////", domains);
+
     let _list = [];
-    for (let i = 0; i < _labels.length; i ++) {
-      const domain = await registrarContract.methods.queryDomain(_labels[i]).call();
-      _list.push({
-        name: domain.name + '.eth',
-        listed: true,
-        labelName: domain.name,
-        labelhash: _labels[i]
-      });
-
-      setList(_list);
+    for (let i = 0; i < domains.length; i ++) {
+      if ((domains[i].owner).toLowerCase() == account.toLowerCase()) {
+        const domain = domains[i];
+        _list.push({
+          name: domain.name + '.eth',
+          listed: true,
+          labelName: domain.name,
+          labelhash: WEB3.utils.sha3(domain.name)
+        });
+      }
     };
-  }
+    setList(_list);
 
-    const {
-      data: { networkId }
-    } = useQuery (RESET_STATE_QUERY)
+  }
 
     const normalisedAddress = normaliseAddress(account)
     const pageQuery = ""
@@ -200,6 +201,7 @@ const Domains = () => {
                   labelName={item.labelName}
                   listed={item.listed}
                   id={item.labelhash.toString(10)}
+                  update={() => setUpdated(!isUpdated)}
                 />
             ))
         }

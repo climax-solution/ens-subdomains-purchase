@@ -47,10 +47,14 @@ const Pricing = () => {
             setLoading(true);
             const names = domain.split('.');
             const bytename = WEB3.utils.sha3(names[0]);
-            const domain_ = await registrarContract.methods.queryDomain(bytename).call();
-            if (domain_.name == names[0]) {
-                setLabelHash(bytename);
-                setPrices(domain_.price);
+            try {
+                const domain_ = await registrarContract.methods.queryDomain(bytename).call();
+                if (domain_.name == names[0]) {
+                    setLabelHash(bytename);
+                    setPrices(domain_.price);
+                }
+            } catch(err) {
+                console.log(err);
             }
             setLoading(false);
         }

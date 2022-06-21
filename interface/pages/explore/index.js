@@ -4,9 +4,10 @@ import Loader from "../../components/loader";
 import { useAppContext } from '../../context/state';
 
 const ExploreDomains = () => {
+  
     const [domains, setDomains] = useState([]);
     const [isLoading, setLoading] = useState(true);
-    const { registrarContract } = useAppContext();
+    const { WEB3, registrarContract } = useAppContext();
 
     useEffect(() => {
       if (registrarContract) {
@@ -16,8 +17,9 @@ const ExploreDomains = () => {
 
     const fetchDomains = async() => {
       setLoading(true);
-      const _domains = await registrarContract.methods.queryEntireDomains().call();
+      let _domains = await registrarContract.methods.queryEntireDomains().call();
       console.log(_domains);
+      _domains = [..._domains];
       setDomains(_domains);
       setLoading(false);
     }
@@ -29,7 +31,10 @@ const ExploreDomains = () => {
               :<>
                 {
                   domains.map((item, idx) => (
-                      <Domain key={idx} labelhash={item}/>
+                      <Domain
+                        key={idx}
+                        labelhash={WEB3.utils.sha3(item.name)
+                      }/>
                   ))
                 }
               </>
