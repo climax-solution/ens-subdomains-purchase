@@ -208,7 +208,7 @@ const Collected = () => {
   return (
     <>
       {
-        account ? <Domains/> : <h2>EMPTY</h2>
+        account ? <Domains/> : <Empty/>
       }
     </>
   )
