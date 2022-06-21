@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "../../context/state";
 import ReserveItem from "./item";
 
-const Reservation = ({ label }) => {
+const Reservation = ({ data }) => {
 
     const { WEB3, registrarContract } = useAppContext();
     const [name, setName] = useState('');
@@ -12,35 +12,26 @@ const Reservation = ({ label }) => {
 
     useEffect(() => {
         async function getReserves() {
-            const _domain = await registrarContract.methods.queryDomain(label).call();
-            const reserves = await registrarContract.methods.queryReservesList(label).call();
+            const _domain = await registrarContract.methods.queryDomain(data.domain).call();
             const _resolver = await WEB3.eth.ens.getResolver(_domain.name + '.eth');
             
-            // console.log("_resolver", _resolver)
+            console.log("_resolver", _resolver, _domain)
             setResolver(_resolver._address);
             setName(_domain.name);
             setPrices(_domain.price);
-            setList(reserves);
         }
 
         getReserves();
-    }, [label])
+    }, [data])
 
     return (
         <>
-            {
-                list.map((item, idx) => {
-                    return (
-                        <ReserveItem
-                            name={item}
-                            prices={prices}
-                            key={idx}
-                            domain={name}
-                            resolver={resolver}
-                        />
-                    )
-                })
-            }
+            <ReserveItem
+                name={data.name}
+                prices={prices}
+                domain={name}
+                resolver={resolver}
+            />
         </>
         
     )
