@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/router'
-import { gql, useQuery  } from '@apollo/client'
+import { useQuery  } from '@apollo/client'
 import moment from "moment";
 import Collect from "../../components/collect";
 import {
@@ -15,13 +14,7 @@ import { decryptName, checkIsDecrypted } from '../../utility/api/labels'
 import { useBlock } from "../../utility/hooks";
 import Loader from "../../components/loader";
 import { useAppContext } from "../../context/state";
-
-const RESET_STATE_QUERY = gql`
-  query resetStateQuery @client {
-    networkId
-    isENSReady
-  }
-`
+import Empty from "../../components/empty";
 
 function filterOutReverse(domains) {
   return domains.filter(domain => domain.parent)
@@ -108,7 +101,6 @@ const Domains = () => {
 
   const fetchListedDomains = async() => {
     const domains = await registrarContract.methods.queryEntireDomains().call();
-    console.log("/////domains/////", domains);
 
     let _list = [];
     for (let i = 0; i < domains.length; i ++) {
@@ -190,7 +182,6 @@ const Domains = () => {
       return { ...item, domain: { listed: false, ...item.domain } };
     });
 
-    console.log("domains, domains", domains);
     return (
         <div className="flex flex-wrap justify-even gap-2 p-10">
         {
@@ -205,6 +196,8 @@ const Domains = () => {
                 />
             ))
         }
+
+        { !domains.length && <Empty/> }
         </div>
     )
 }

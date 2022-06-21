@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Empty from "../../components/empty";
 import Loader from "../../components/loader";
 import PricingItem from "../../components/pricing";
 import { useAppContext } from "../../context/state";
@@ -79,7 +80,7 @@ const Pricing = () => {
                                 ite={idx}
                                 key={idx}
                             />
-                        )) : <></>
+                        )) : <Empty/>
                     }
                 </>
             }
