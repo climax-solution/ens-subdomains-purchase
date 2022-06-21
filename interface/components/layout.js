@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -8,8 +8,9 @@ import Loader from "./loader";
 
 function Layout({ children }) {
 
-    const { pathname: path } = useRouter();
+    const { pathname: path, query } = useRouter();
     const { isLoading } = useAppContext();
+    const [ isDown, setDown ] = useState(false);
 
     return (
         <div className="flex flex-no-wrap xxs:flex-col sm:flex-row">
@@ -32,7 +33,7 @@ function Layout({ children }) {
                         </Link>
                     </div>
                     <NetworkInformation/>
-                    <ul className="mt-6">
+                    <ul className="mt-6 w-40 mx-auto">
                         <li className={`flex w-full justify-between cursor-pointer items-center mb-6 ${path.slice(1) == 'explore' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500"}`}>
                             <div className="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 icon icon-tabler icon-shopping-cart" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -41,13 +42,35 @@ function Layout({ children }) {
                                 <Link href="/explore" className="text-sm ml-2">Explore Domains</Link>
                             </div>
                         </li>
-                        <li className={"flex w-full justify-between cursor-pointer items-center mb-6 " + (path.slice(1) == 'pending' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
-                            <div className="flex items-center">
+                        <li className={"flex w-full justify-between flex-col cursor-pointer items-center mb-6 " + (path.slice(1, 8) == 'pending' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
+                            <div className="flex w-full items-center" onClick={() => setDown(!isDown)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 icon icon-tabler icon-clock" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <Link href="/pending" className="text-sm  ml-2">Pending List</Link>
+                                <a>Pending List</a>
+                                <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
+                                    className="w-3 h-3 ml-3"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                >
+                                    <path
+                                        fill="currentColor"
+                                        d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
+                                    />
+                                </svg>
                             </div>
+                            <ul className={"relative accordion-collapse collapse " + (isDown ? "" : "hidden")}>
+                                <li className="relative">
+                                    <Link href="/pending/reserve"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + (query.tab == 'reserve' ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Reserves</a></Link>
+                                </li>
+                                <li className="relative">
+                                    <Link href="/pending/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + (query.tab == 'request' ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests</a></Link>
+                                </li>
+                            </ul>
                         </li>
                         <li className={"flex w-full justify-between cursor-pointer items-center mb-6 " + ((path.slice(1)).indexOf("collected") == 0 ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
                             <div className="flex items-center">
@@ -131,7 +154,7 @@ function Layout({ children }) {
             </div>
             {/* Sidebar ends */}
             {/* Remove class [ h-64 ] when adding a card block */}
-            <div className="container mx-auto h-full max-h-screen overflow-auto">
+            <div className="container mx-auto h-full min-h-screen relative max-h-screen overflow-auto">
                 {/* Remove class [ border-dashed border-2 border-gray-300 ] to remove dotted border */}
                 <div className="w-full h-full rounded 
                 iop-oiu">{
