@@ -23,7 +23,6 @@ const Domain = ({ labelhash }) => {
         if (registrarContract && labelhash) fetchData();
     }, [registrarContract, labelhash]);
 
-    console.log("network", network)
     return (
         <>
             {

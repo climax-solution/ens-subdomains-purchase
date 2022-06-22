@@ -6,10 +6,13 @@ import '../styles/globals.css'
 import { clientReactive, networkIdReactive } from '../utility/apollo/reactiveVars'
 import { setupClient } from '../utility/apollo/apolloClient'
 import setup from "../utility/setup";
-setup(false);
+// setup(false);
 
 function MyApp({ Component, pageProps }) {
-  const client = clientReactive(setupClient(networkIdReactive()))
+  const networkid = networkIdReactive();
+  const etu = setupClient(networkid);
+  const client = clientReactive(etu)
+
   return (
     <ApolloProvider client={client}>
       <AppWrapper>

@@ -29,7 +29,7 @@ function NetworkInformation() {
       const { web3, ENSDomain, SubdomainReg } = await getWeb3();
       const __accounts = await web3.eth.getAccounts();
       const _network = await web3.eth.net.getNetworkType();
-      console.log("__accounts", __accounts, _network);
+      console.log("__accounts", __accounts, _network, SubdomainReg);
       
       setAccount(accounts ? accounts[0] : '');
       setNetwork(_network);

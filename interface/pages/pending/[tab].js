@@ -41,6 +41,9 @@ const PendingList = () => {
         if (account) {
             getReserves();
         }
+        else {
+            setLoading(false);
+        }
 
     }, [registrarContract, tab, isUpdate]);
 
