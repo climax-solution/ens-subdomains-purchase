@@ -41,8 +41,11 @@ function NetworkInformation() {
   }, [network, accounts])
 
   const shorten = (str, cut = 4) => {
-      const res = str.substr(0, cut) + '...' + str.substr(-cut);
-      return res;
+      if (str) {
+        const res = str.substr(0, cut) + '...' + str.substr(-cut);
+        return res;
+      }
+      return "";
   }
 
   return (
