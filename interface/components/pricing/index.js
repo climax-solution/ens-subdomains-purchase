@@ -29,7 +29,7 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
             {
                 isLoading ? <GearLoading/>
                 :
-                <div className="max-w-xxs flex flex-col py-8 bg-white rounded-md shadow-lg hover:scale-105 transition duration-500 p-4 w-full cursor-pointer">
+                <div className="max-w-15rem flex flex-col py-8 bg-white rounded-md shadow-lg hover:scale-105 transition duration-500 p-4 w-full cursor-pointer">
                     <div className="flex flex-wrap items-center justify-between mb-6">
                         <span className="mr-3 text-lg md:text-xl text-coolGray-800 font-medium">{ level }</span>
                         { popular && <span className="inline-block py-px px-2 text-xs leading-5 text-white bg-yellow-500 font-medium uppercase rounded-full">popular</span> }
