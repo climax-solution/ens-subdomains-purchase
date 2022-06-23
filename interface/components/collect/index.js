@@ -186,8 +186,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
                                                 </Dialog.Title>
                                                 <div className="mt-2 mb-4">
                                                     <p className="text-sm text-gray-500">
-                                                    Are you sure you want to deactivate your account? All of your data will be permanently
-                                                    removed. This action cannot be undone.
+                                                    Enter pricing for duration of sub domain.
                                                     </p>
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-3">
