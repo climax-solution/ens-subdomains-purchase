@@ -85,9 +85,9 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
                     >
                         <div className='flex gap-8 items-center'>
                             <span className="text-xl font-bold">{data.name}</span>
+                            <span>{name}.eth</span>
                             <span>{data.owner}</span>
                             <span>{ prices[data.subscription] ? WEB3.utils.fromWei(`${prices[data.subscription]}`): 0} ETH</span>
-                            <span>{name}.eth</span>
                         </div>
                         <div className='flex gap-3'>
                             {
