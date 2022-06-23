@@ -5,6 +5,7 @@ import axios from "axios";
 import { gql, useQuery  } from "@apollo/client";
 import { useAppContext } from "../../context/state";
 import GearLoading from "../loader/gear";
+import { NotificationManager } from "react-notifications";
 
 const NETWORK_INFORMATION_QUERY = gql`
   query getNetworkInfo @client {
@@ -81,6 +82,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
                     from: account,
                     value: list_fee
                 });
+                NotificationManager.success("Success");
                 closeModal();
             } catch(err) {
                 console.log(err);
@@ -97,6 +99,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
             await registrarContract.methods.unlistDomain(labelName).send({
                 from: account
             });
+            NotificationManager.success("Success");
         } catch(err) {
 
         }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAppContext } from "../../context/state";
 import GearLoading from "../../components/loader/gear";
+import { NotificationManager } from "react-notifications";
 
 const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
 
@@ -18,6 +19,7 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
                 from: account,
                 value: WEB3.utils.toWei(price)
             });
+            NotificationManager.success("Success");
         } catch(err) {
             console.log(err);
         }

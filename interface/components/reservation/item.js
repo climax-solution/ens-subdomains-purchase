@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { NotificationManager } from "react-notifications";
 import { useAppContext } from "../../context/state";
 
 const ReserveItem = ({ data, tab, startLoading, update }) => {
@@ -27,11 +28,16 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
 
     
     const confirmSubdomain = async() => {
+        if (!account) {
+            NotificationManager.warning("Please connect wallet");
+            return;
+        }
         startLoading(true);
         try {
             await registrarContract.methods.register(data.domain, data.name, resolver).send({
                 from: account
             });
+            NotificationManager.success("Success");
 
         } catch(err) {
             console.log(err);
@@ -46,7 +52,7 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
             await registrarContract.methods.declineSubdomain(data.domain, data.name).send({
                 from: account
             });
-
+            NotificationManager.success("Success");
         } catch(err) {
             console.log(err);
         }

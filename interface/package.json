@@ -31,7 +31,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-ga": "^3.3.0",
-    "react-nextjs-toast": "^1.2.5",
+    "react-notifications": "^1.7.3",
     "traverse": "^0.6.6",
     "walletlink": "^2.5.0",
     "web3": "^1.7.3",

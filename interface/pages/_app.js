@@ -6,7 +6,9 @@ import '../styles/globals.css'
 import { clientReactive, networkIdReactive } from '../utility/apollo/reactiveVars'
 import { setupClient } from '../utility/apollo/apolloClient'
 import setup from "../utility/setup";
-// setup(false);
+import 'react-notifications/lib/notifications.css';
+
+setup(false);
 
 function MyApp({ Component, pageProps }) {
   const networkid = networkIdReactive();
