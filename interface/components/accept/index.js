@@ -81,7 +81,7 @@ const Accept = ({ data, update, tab, startLoading }) => {
                             <div className='flex gap-8 items-center'>
                                 <span className="text-xl font-bold">{data.subdomain}</span>
                                 <span>{data.domain}.eth</span>
-                                <span>{data.owner}</span>
+                                <span>{ tab == "request" ? data.reserver : data.owner }</span>
                                 <span>{ WEB3.utils.fromWei(data.price)} ETH</span>
                                 <span className='font-bold'>{ isAble ? moment(expire * 1000).format('MMMM Do YYYY, h:mm:ss a') : "Expired"}</span>
                             </div>

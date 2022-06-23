@@ -8,6 +8,7 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
     const [isLoading, setLoading] = useState(false);
     const [name, setName] = useState('');
     const [prices, setPrices] = useState({});
+    const [domainOwner, setDomainOwner] = useState();
     const [resolver, setResolver] = useState('');
 
     useEffect(() => {
@@ -19,6 +20,7 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
             console.log("_resolver", _resolver, _domain)
             setResolver(_resolver._address);
             setName(_domain.name);
+            setDomainOwner(_domain.owner);
             setPrices(_domain.price);
             setLoading(false);
         }
@@ -86,7 +88,7 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
                         <div className='flex gap-8 items-center'>
                             <span className="text-xl font-bold">{data.name}</span>
                             <span>{name}.eth</span>
-                            <span>{data.owner}</span>
+                            <span>{ tab == "reserve" ? domainOwner : data.owner }</span>
                             <span>{ prices[data.subscription] ? WEB3.utils.fromWei(`${prices[data.subscription]}`): 0} ETH</span>
                         </div>
                         <div className='flex gap-3'>
