@@ -8,25 +8,25 @@ import { useAppContext } from "../../context/state";
 const list = [
     {
         level: "Basic",
-        text: "Work for 1 month",
+        text: "Works for 1 Month",
         period: "",
         popular: false
     },
     {
         level: "Primary",
-        text: "Work for 6 months",
+        text: "Works for 6 Months",
         period: "",
         popular: false
     },
     {
         level: "Medium",
-        text: "Work for 1 year",
+        text: "Works for 1 Year",
         period: "",
         popular: true
     },
     {
         level: "Forever",
-        text: "Work forever",
+        text: "Works Forever",
         period: "",
         popular: false
     }
