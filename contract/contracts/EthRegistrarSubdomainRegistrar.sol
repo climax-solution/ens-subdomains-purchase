@@ -32,6 +32,7 @@ contract EthRegistrarSubdomainRegistrar {
         uint256 expiration;
         address owner;
         bool existed;
+        uint256 createdAt;
     }
 
     // namehash('eth')
@@ -55,7 +56,7 @@ contract EthRegistrarSubdomainRegistrar {
     mapping(bytes32 => Exist) domain_index;
     mapping(bytes32 => mapping(string => SubIndex)) reserve_indexes;
 
-    event NewRegistration(string domain, string subdomain, address owner, address reserver, uint256 price);
+    event NewRegistration(string domain, string subdomain, address owner, address reserver, uint256 price, uint256 createdAt);
     event DomainConfigured(bytes32 indexed label);
     event DomainUnlisted(bytes32 indexed label);
     
@@ -191,8 +192,8 @@ contract EthRegistrarSubdomainRegistrar {
 
         uint256 expires = reserve.subscription < 3 ? block.timestamp + expiration[reserve.subscription] : expiration[reserve.subscription];
         reserves[reserve_key.index] = reserves[reserves.length - 1];
-        reserve_indexes[label][reserves[reserve_key.index].name] = SubIndex(reserve_key.index, 0, reserves[reserve_key.index].owner, true);
-        reserve_indexes[label][subdomain] = SubIndex(0, expires, reserve.owner, false);
+        reserve_indexes[label][reserves[reserve_key.index].name] = SubIndex(reserve_key.index, 0, reserves[reserve_key.index].owner, true, 0);
+        reserve_indexes[label][subdomain] = SubIndex(0, expires, reserve.owner, false, block.timestamp);
         reserves.pop();
 
         address subdomainOwner = reserve.owner;
@@ -214,7 +215,7 @@ contract EthRegistrarSubdomainRegistrar {
 
         doRegistration(domainNode, subdomainLabel, subdomainOwner, resolver);
         
-        emit NewRegistration(domain.name, subdomain, msg.sender, subdomainOwner, domain.price[reserve.subscription]);
+        emit NewRegistration(domain.name, subdomain, msg.sender, subdomainOwner, domain.price[reserve.subscription], block.timestamp);
     }
 
     function queryEntireDomains() public view returns(Domain[] memory) {
@@ -242,7 +243,7 @@ contract EthRegistrarSubdomainRegistrar {
         // require(reserves[domain_key.index].domain == "", "someone already requested");
         require(msg.value >= domains[domain_key.index].price[subscription], "not enough fee");
 
-        reserve_indexes[label][subdomain] = SubIndex(reserves.length, 0, msg.sender, true);
+        reserve_indexes[label][subdomain] = SubIndex(reserves.length, 0, msg.sender, true, 0);
         reserves.push(Reserve(subdomain, label, msg.sender, subscription));
     }
 
@@ -264,7 +265,7 @@ contract EthRegistrarSubdomainRegistrar {
         payable(reserve.owner).transfer(domain.price[reserve.subscription]);
         
         reserves[index] = reserves[reserves.length - 1];
-        reserve_indexes[reserves[index].domain][reserves[index].name] = SubIndex(index, 0, reserves[index].owner, true);
+        reserve_indexes[reserves[index].domain][reserves[index].name] = SubIndex(index, 0, reserves[index].owner, true, 0);
 
         reserves.pop();
         delete reserve_indexes[label][subdomain];
