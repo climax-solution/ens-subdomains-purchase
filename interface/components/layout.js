@@ -163,7 +163,7 @@ function Layout({ children }) {
                 <div className="px-8 border-t border-gray-700">
                     <ul className="w-full flex items-center justify-between bg-gray-800">
                         <li className="cursor-pointer text-white pt-5 pb-3">
-                            <a href="https://twitter.com/EnsExpress" target="_blank">
+                            <a href="https://twitter.com/EnsExpress" target="_blank" rel="noreferrer">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     x="0px"
