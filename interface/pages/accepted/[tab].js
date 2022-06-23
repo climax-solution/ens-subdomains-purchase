@@ -23,6 +23,7 @@ const Accepted = () => {
                     fromBlock: 10892100,
                     toBlock: 'latest'
                 }, function(error, events) {
+                    console.log(events);
                     if (!error) {
                         if (tab == 'reserve') {
                             events = events.filter(({returnValues: item}) => item.reserver.toLowerCase() == account.toLowerCase());

@@ -12,9 +12,10 @@ const Accept = ({ data, update, tab, startLoading }) => {
             setLoading(true);
             const domain_label = WEB3.utils.sha3(data.domain);
             const state = await registrarContract.methods.getReserveIndex(domain_label, data.subdomain).call();
-            if (tab == "reserve" && lowercase(account) == lowercase(state.owner)) setAble(true);
+            if (tab == "reserve" && lowercase(account) == lowercase(state.owner) && state.price == data.price && state.createdAt == data.createdAt) setAble(true);
             else {
-                if (lowercase(state.owner) != "0x0000000000000000000000000000000000000000") setAble(true);
+                if (lowercase(state.owner) != "0x0000000000000000000000000000000000000000" && state.createdAt == data.createdAt) setAble(true);
+                else setAble(false);
             }
             setLoading(false);
         }

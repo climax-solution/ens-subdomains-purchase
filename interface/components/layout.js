@@ -13,6 +13,7 @@ function Layout({ children }) {
     const { isLoading } = useAppContext();
     const [ isPendingDown, setPendingDown ] = useState(false);
     const [ isAcceptedDown, setAcceptedDown] = useState(false);
+
     return (
         <div className="flex flex-no-wrap xxs:flex-col sm:flex-row">
             <NotificationContainer/>
@@ -67,10 +68,10 @@ function Layout({ children }) {
                             </div>
                             <ul className={"relative accordion-collapse collapse " + (isPendingDown ? "" : "hidden")}>
                                 <li className="relative">
-                                    <Link href="/pending/reserve"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((isPendingDown && query.tab == 'reserve') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Reserves</a></Link>
+                                    <Link href="/pending/reserve"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("pending") == 0 && query.tab == 'reserve') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Reserves</a></Link>
                                 </li>
                                 <li className="relative">
-                                    <Link href="/pending/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((isPendingDown && query.tab == 'request') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests</a></Link>
+                                    <Link href="/pending/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("pending") == 0 && query.tab == 'request') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests</a></Link>
                                 </li>
                             </ul>
                         </li>
@@ -151,10 +152,10 @@ function Layout({ children }) {
                             </div>
                             <ul className={"relative accordion-collapse collapse " + (isAcceptedDown ? "" : "hidden")}>
                                 <li className="relative">
-                                    <Link href="/accepted/reserve"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((isAcceptedDown && query.tab == 'reserve') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Reserves</a></Link>
+                                    <Link href="/accepted/reserve"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("accepted") == 0 && query.tab == 'reserve') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Reserves</a></Link>
                                 </li>
                                 <li className="relative">
-                                    <Link href="/accepted/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((isAcceptedDown && query.tab == 'request') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests</a></Link>
+                                    <Link href="/accepted/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("accepted") == 0 && query.tab == 'request') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests</a></Link>
                                 </li>
                             </ul>
                         </li>
