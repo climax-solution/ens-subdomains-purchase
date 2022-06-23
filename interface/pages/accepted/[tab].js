@@ -51,6 +51,7 @@ const Accepted = () => {
                             <Accept
                                 data={item.returnValues}
                                 key={idx}
+                                tab={tab}
                                 update={() => setUpdate(!isUpdate)}
                                 startLoading={setLoading}
                             />

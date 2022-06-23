@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NotificationManager} from 'react-notifications';
 import { useAppContext } from "../../context/state";
 
-const Accept = ({ data, update, startLoading }) => {
+const Accept = ({ data, update, tab, startLoading }) => {
 
     const { WEB3, account, registrarContract } = useAppContext();
     const [isLoading, setLoading] = useState(true);
@@ -12,7 +12,10 @@ const Accept = ({ data, update, startLoading }) => {
             setLoading(true);
             const domain_label = WEB3.utils.sha3(data.domain);
             const state = await registrarContract.methods.getReserveIndex(domain_label, data.subdomain).call();
-            if (lowercase(account) == lowercase(state.owner)) setAble(true);
+            if (tab == "reserve" && lowercase(account) == lowercase(state.owner)) setAble(true);
+            else {
+                if (lowercase(state.owner) != "0x0000000000000000000000000000000000000000") setAble(true);
+            }
             setLoading(false);
         }
         if (registrarContract) {
