@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import moment from "moment";
 import { NotificationManager} from 'react-notifications';
 import { useAppContext } from "../../context/state";
 
@@ -7,11 +8,15 @@ const Accept = ({ data, update, tab, startLoading }) => {
     const { WEB3, account, registrarContract } = useAppContext();
     const [isLoading, setLoading] = useState(true);
     const [isAble, setAble] = useState(false);
+    const [expire, setExpire] = useState();
+
     useEffect(() => {
         async function checkAble() {
             setLoading(true);
             const domain_label = WEB3.utils.sha3(data.domain);
             const state = await registrarContract.methods.getReserveIndex(domain_label, data.subdomain).call();
+            setExpire(state.expiration);
+
             if (tab == "reserve" && lowercase(account) == lowercase(state.owner) && state.price == data.price && state.createdAt == data.createdAt) setAble(true);
             else {
                 if (lowercase(state.owner) != "0x0000000000000000000000000000000000000000" && state.createdAt == data.createdAt) setAble(true);
@@ -78,6 +83,7 @@ const Accept = ({ data, update, tab, startLoading }) => {
                                 <span>{data.domain}.eth</span>
                                 <span>{data.owner}</span>
                                 <span>{ WEB3.utils.fromWei(data.price)} ETH</span>
+                                <span className='font-bold'>{ isAble ? moment(expire * 1000).format('MMMM Do YYYY, h:mm:ss a') : "Expired"}</span>
                             </div>
                             { isAble && <div className='flex gap-3'>
                                 <button
