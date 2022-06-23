@@ -26,6 +26,14 @@ contract EthRegistrarSubdomainRegistrar {
         uint256 index;
         bool existed;
     }
+
+    struct SubIndex {
+        uint256 index;
+        uint256 expiration;
+        address owner;
+        bool existed;
+    }
+
     // namehash('eth')
     bytes32 constant public TLD_NODE = 0x93cdeb708b7545dc668eb9280176169d1c33cfd8ed6f04690a0bcc88a93fc4ae;
 
@@ -39,14 +47,15 @@ contract EthRegistrarSubdomainRegistrar {
 
     uint256 public reserve_fee = 500;
     uint256 public list_fee = 0.01 ether;
+    uint256[4] expiration = [30 days, 180 days, 365 days, ~uint256(0)];
 
     Domain[] public domains;
     Reserve[] public reserves;
 
     mapping(bytes32 => Exist) domain_index;
-    mapping(bytes32 => mapping(string => Exist)) reserve_indexes;
+    mapping(bytes32 => mapping(string => SubIndex)) reserve_indexes;
 
-    event NewRegistration(bytes32 label, bytes32 subdomain, address owner, uint256 price);
+    event NewRegistration(string domain, string subdomain, address owner, address reserver, uint256 price);
     event DomainConfigured(bytes32 indexed label);
     event DomainUnlisted(bytes32 indexed label);
     
@@ -170,7 +179,7 @@ contract EthRegistrarSubdomainRegistrar {
 
     function register(bytes32 label, string calldata subdomain, address resolver) external not_stopped owner_only(label) {
         Exist memory domain_key = domain_index[label];
-        Exist memory reserve_key = reserve_indexes[label][subdomain];
+        SubIndex memory reserve_key = reserve_indexes[label][subdomain];
 
         require(domain_key.existed, "no domain listed");
         
@@ -180,8 +189,10 @@ contract EthRegistrarSubdomainRegistrar {
         require(reserve.owner != address(0) || !reserve_key.existed, "no reserved");
         require(reserve.domain == label, "not matched domain");
 
+        uint256 expires = reserve.subscription < 3 ? block.timestamp + expiration[reserve.subscription] : expiration[reserve.subscription];
         reserves[reserve_key.index] = reserves[reserves.length - 1];
-        reserve_indexes[label][reserves[reserve_key.index].name] = Exist(reserve_key.index, true);
+        reserve_indexes[label][reserves[reserve_key.index].name] = SubIndex(reserve_key.index, 0, reserves[reserve_key.index].owner, true);
+        reserve_indexes[label][subdomain] = SubIndex(0, expires, reserve.owner, false);
         reserves.pop();
 
         address subdomainOwner = reserve.owner;
@@ -189,6 +200,7 @@ contract EthRegistrarSubdomainRegistrar {
         bytes32 subdomainLabel = keccak256(bytes(subdomain));
 
         uint256 total = domain.price[reserve.subscription];
+        
         if (reserve_fee > 0) {
             uint256 reserveFee = (domain.price[reserve.subscription] * reserve_fee) / 10000;
             treasury.transfer(reserveFee);
@@ -201,10 +213,8 @@ contract EthRegistrarSubdomainRegistrar {
         }
 
         doRegistration(domainNode, subdomainLabel, subdomainOwner, resolver);
-
-        delete reserve_indexes[label][subdomain];
-
-        emit NewRegistration(label, subdomainLabel, subdomainOwner, domain.price[reserve.subscription]);
+        
+        emit NewRegistration(domain.name, subdomain, msg.sender, subdomainOwner, domain.price[reserve.subscription]);
     }
 
     function queryEntireDomains() public view returns(Domain[] memory) {
@@ -223,20 +233,22 @@ contract EthRegistrarSubdomainRegistrar {
 
     function reserveSubdomain(bytes32 label, string calldata subdomain, uint subscription) external payable {
         Exist memory domain_key = domain_index[label];
-        Exist memory reserve_key = reserve_indexes[label][subdomain];
+        SubIndex memory reserve_key = reserve_indexes[label][subdomain];
 
         require(domain_key.existed, "no domain listed");
         require(!reserve_key.existed, "no reserved");
+        require(reserve_key.expiration < block.timestamp, "not available until expire");
         require(address(domains[domain_key.index].owner) != address(0), "no domain listed");
         // require(reserves[domain_key.index].domain == "", "someone already requested");
         require(msg.value >= domains[domain_key.index].price[subscription], "not enough fee");
 
-        reserve_indexes[label][subdomain] = Exist(reserves.length, true);
+        reserve_indexes[label][subdomain] = SubIndex(reserves.length, 0, msg.sender, true);
         reserves.push(Reserve(subdomain, label, msg.sender, subscription));
     }
 
     function declineSubdomain(bytes32 label, string calldata subdomain) external {
-        Exist memory reserve_key = reserve_indexes[label][subdomain];
+        SubIndex memory reserve_key = reserve_indexes[label][subdomain];
+
         uint256 domain_inx = domain_index[label].index;
         uint256 index = reserve_key.index;
 
@@ -252,7 +264,7 @@ contract EthRegistrarSubdomainRegistrar {
         payable(reserve.owner).transfer(domain.price[reserve.subscription]);
         
         reserves[index] = reserves[reserves.length - 1];
-        reserve_indexes[reserves[index].domain][reserves[index].name] = Exist(index, true);
+        reserve_indexes[reserves[index].domain][reserves[index].name] = SubIndex(index, 0, reserves[index].owner, true);
 
         reserves.pop();
         delete reserve_indexes[label][subdomain];
@@ -269,5 +281,21 @@ contract EthRegistrarSubdomainRegistrar {
     function updateTreasuryWallet(address account) external registrar_owner_only {
         require(account != address(0), "not valid account");
         treasury = payable(account);
+    }
+
+    function removeSubdomain(bytes32 label, string memory subdomain) external {
+        SubIndex memory existed = reserve_indexes[label][subdomain];
+        uint256 do_index = domain_index[label].index;
+
+        require(existed.owner == msg.sender || address(domains[do_index].owner) == msg.sender, "only available reserver or domain owner");
+        if (address(domains[do_index].owner) == msg.sender) {
+            require(existed.expiration < block.timestamp, "not available until expire");
+        }
+        
+        delete reserve_indexes[label][subdomain];
+    }
+
+    function getReserveIndex(bytes32 label, string memory subdomain) public view returns(SubIndex memory) {
+        return reserve_indexes[label][subdomain];
     }
 }
