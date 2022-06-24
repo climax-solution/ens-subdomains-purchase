@@ -46,6 +46,7 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
                             type="text"
                             className="border-2 border-green-600 outline-0 h-10 px-4 w-36 mb-4 rounded-full transition text-center"
                             value={subdomain}
+                            placeholder="Input SubDomain"
                             onChange={(e) => setSubDomain(e.target.value)}
                         />
                     </div>
