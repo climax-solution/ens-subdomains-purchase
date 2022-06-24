@@ -50,8 +50,9 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
                             onChange={(e) => setSubDomain(e.target.value)}
                             onKeyPress={
                                 (e) => {
+                                    console.log(e.which)
                                     if (e.which < 97 || e.which > 122) {
-                                        if (e.which < 48 || e.which > 59) e.preventDefault();
+                                        if (e.which < 48 || e.which > 57) e.preventDefault();
                                     }
                                 }
                             }
