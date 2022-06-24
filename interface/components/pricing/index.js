@@ -48,6 +48,13 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
                             value={subdomain}
                             placeholder="Input sub"
                             onChange={(e) => setSubDomain(e.target.value)}
+                            onKeyPress={
+                                (e) => {
+                                    if (e.which < 97 || e.which > 122) {
+                                        if (e.which < 48 || e.which > 59) e.preventDefault();
+                                    }
+                                }
+                            }
                         />
                     </div>
                     <button

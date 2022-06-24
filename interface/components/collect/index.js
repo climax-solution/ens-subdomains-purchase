@@ -197,7 +197,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
                                                             value={oneM}
                                                             onChange={(e) => setOneM(e.target.value)}
                                                         />
-                                                        <span className="absolute right-2 p-2 border-2 rounded-lg shadow-md w-24 text-center">1 month</span>
+                                                        <span className="absolute right-2 p-2 border-2 rounded-lg shadow-md w-24 text-center">1 Month</span>
                                                     </div>
                                                     <div className="relative flex items-center">
                                                         <input
@@ -205,7 +205,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
                                                             className={`border-2 p-4 pr-28 rounded-md  focus-visible:border-indigo-500 shadow-sm sm:text-sm w-full outline-0 rounded-md col-span-6 ${isError ? "border-red-300" : "border-gray-300"}`}
                                                             value={sixM}
                                                             onChange={(e) => setSixM(e.target.value)}                                                        />
-                                                        <span className="absolute right-2 p-2 border-2 rounded-lg shadow-md w-24 text-center">6 months</span>
+                                                        <span className="absolute right-2 p-2 border-2 rounded-lg shadow-md w-24 text-center">6 Months</span>
                                                     </div>
                                                     <div className="relative flex items-center">
                                                         <input
@@ -214,7 +214,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
                                                             value={oneY}
                                                             onChange={(e) => setOneY(e.target.value)}
                                                         />
-                                                        <span className="absolute right-2 p-2 border-2 rounded-lg shadow-md w-24 text-center">1 year</span>
+                                                        <span className="absolute right-2 p-2 border-2 rounded-lg shadow-md w-24 text-center">1 Year</span>
                                                     </div>
                                                     <div className="relative flex items-center">
                                                         <input
