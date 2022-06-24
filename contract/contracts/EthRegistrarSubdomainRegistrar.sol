@@ -47,7 +47,7 @@ contract EthRegistrarSubdomainRegistrar {
     ENS public ens;
 
     uint256 public reserve_fee = 500;
-    uint256 public list_fee = 0.01 ether;
+    uint256 public list_fee = 0.02 ether;
     uint256[4] expiration = [30 days, 180 days, 365 days, ~uint256(0)];
 
     Domain[] public domains;
@@ -276,6 +276,7 @@ contract EthRegistrarSubdomainRegistrar {
     }
 
     function updateReserveFee(uint _fee) external registrar_owner_only {
+        require(_fee < 10000);
         reserve_fee = _fee;
     }
 
