@@ -54,7 +54,7 @@ const Pricing = () => {
                     setPrices(domain_.price);
                 }
             } catch(err) {
-                console.log(err);
+                //console.log(err);
             }
             setLoading(false);
         }

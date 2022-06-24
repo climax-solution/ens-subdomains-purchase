@@ -16,7 +16,7 @@ const Domain = ({ labelhash }) => {
             await axios.get(`https://metadata.ens.domains/${network}/${process.env.ENSDomain}/${labelhash}`).then(res => {
                 setInfo(res.data);
             }).catch(err => {
-                console.log(err);
+                //console.log(err);
             });
             setLoading(false);
         }

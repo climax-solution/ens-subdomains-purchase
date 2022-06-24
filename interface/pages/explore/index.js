@@ -31,7 +31,7 @@ const ExploreDomains = () => {
     const fetchDomains = async() => {
       setLoading(true);
       let _domains = await registrarContract.methods.queryEntireDomains().call();
-      console.log(_domains);
+      //console.log(_domains);
       _domains = [..._domains];
       
       setDomains(_domains);

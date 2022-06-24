@@ -48,7 +48,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
             const { image } = res.data;
             if (image) setAvatar(image);
         }).catch(err => {
-            console.log(err);
+            //console.log(err);
         });
     }
 
@@ -62,7 +62,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
             setLoading(true);
             try {
                 const isApprovedForAll = await domainContract.methods.isApprovedForAll(account, process.env.Registrar).call();
-                console.log(isApprovedForAll);
+                //console.log(isApprovedForAll);
                 if (isApprovedForAll == false) {
                     await domainContract.methods.setApprovalForAll(process.env.Registrar, true).send({
                         from: account
@@ -85,7 +85,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
                 NotificationManager.success("Success");
                 closeModal();
             } catch(err) {
-                console.log(err);
+                //console.log(err);
             }
             setLoading(false);
             update();

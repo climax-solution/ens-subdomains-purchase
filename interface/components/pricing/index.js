@@ -21,7 +21,7 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
             });
             NotificationManager.success("Success");
         } catch(err) {
-            console.log(err);
+            //console.log(err);
         }
         setLoading(false);
     }

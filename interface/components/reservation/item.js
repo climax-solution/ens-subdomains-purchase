@@ -17,7 +17,7 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
             const _domain = await registrarContract.methods.queryDomain(data.domain).call();
             const _resolver = await WEB3.eth.ens.getResolver(_domain.name + '.eth');
             
-            console.log("_resolver", _resolver, _domain)
+            //console.log("_resolver", _resolver, _domain)
             setResolver(_resolver._address);
             setName(_domain.name);
             setDomainOwner(_domain.owner);
@@ -42,7 +42,7 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
             NotificationManager.success("Success");
 
         } catch(err) {
-            console.log(err);
+            //console.log(err);
         }
         startLoading(false);
         update();
@@ -56,7 +56,7 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
             });
             NotificationManager.success("Success");
         } catch(err) {
-            console.log(err);
+            //console.log(err);
         }
         startLoading(false);
         update();
