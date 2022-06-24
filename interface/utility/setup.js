@@ -39,11 +39,11 @@ export const setSubDomainFavourites = () => {
 export const isSupportedNetwork = networkId => {
   switch (networkId) {
     case 1:
-    case 3:
-    case 4:
-    case 5:
-    case 1337:
-    case 31337:
+    // case 3:
+    // case 4:
+    // case 5:
+    // case 1337:
+    // case 31337:
       return true
     default:
       return false
@@ -77,7 +77,6 @@ export const getProvider = async reconnect => {
     }
 
     const safe = await safeInfo();
-    console.log("safeInfo()", safe);
 
     if (safe) {
       const provider = await setupSafeApp(safe)
@@ -91,6 +90,7 @@ export const getProvider = async reconnect => {
       provider = await connect()
       return provider
     }
+    console.log("safeInfso()", safe, reconnect);
 
     const { providerObject } = await setup({
       customProvider: rpcUrl,

@@ -256,8 +256,8 @@ async function setDNSSECTldOwner(ens, tld, networkId) {
   switch (networkId) {
     case 1:
       return MAINNET_DNSREGISTRAR_ADDRESS
-    case 3:
-      return ROPSTEN_DNSREGISTRAR_ADDRESS
+    // case 3:
+    //   return ROPSTEN_DNSREGISTRAR_ADDRESS
     default:
       return emptyAddress
   }
@@ -770,30 +770,30 @@ const resolvers = {
                   namehash,
                   record
                 ])
-              case 2:
-                return record.map(textRecord => {
-                  if (textRecord.value.length === 0) return undefined
-                  return resolver.encodeFunctionData('setText', [
-                    namehash,
-                    textRecord.key,
-                    textRecord.value
-                  ])
-                })
-              case 3:
-                return record.map(coinRecord => {
-                  if (parseInt(coinRecord.value, 16) === 0) return undefined
-                  const { decoder, coinType } = formatsByName[coinRecord.key]
-                  let addressAsBytes
-                  if (!coinRecord.value || coinRecord.value === '') {
-                    addressAsBytes = Buffer.from('')
-                  } else {
-                    addressAsBytes = decoder(coinRecord.value)
-                  }
-                  return resolver.encodeFunctionData(
-                    'setAddr(bytes32,uint256,bytes)',
-                    [namehash, coinType, addressAsBytes]
-                  )
-                })
+              // case 2:
+              //   return record.map(textRecord => {
+              //     if (textRecord.value.length === 0) return undefined
+              //     return resolver.encodeFunctionData('setText', [
+              //       namehash,
+              //       textRecord.key,
+              //       textRecord.value
+              //     ])
+              //   })
+              // case 3:
+              //   return record.map(coinRecord => {
+              //     if (parseInt(coinRecord.value, 16) === 0) return undefined
+              //     const { decoder, coinType } = formatsByName[coinRecord.key]
+              //     let addressAsBytes
+              //     if (!coinRecord.value || coinRecord.value === '') {
+              //       addressAsBytes = Buffer.from('')
+              //     } else {
+              //       addressAsBytes = decoder(coinRecord.value)
+              //     }
+              //     return resolver.encodeFunctionData(
+              //       'setAddr(bytes32,uint256,bytes)',
+              //       [namehash, coinType, addressAsBytes]
+              //     )
+              //   })
               default:
                 throw Error('More records than expected')
             }
