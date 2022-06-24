@@ -25,7 +25,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
     const [isOpen, setOpenModal] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [isError, setError] = useState(false);
-    const [avatar, setAvatar] = useState("https://openseauserdata.com/files/66b5f0d3387b8fc662a2d6d19468c863.svg");
+    const [avatar, setAvatar] = useState("/ens.svg");
     const cancelButtonRef = useRef(null);
 
     const [oneM, setOneM] = useState('');
