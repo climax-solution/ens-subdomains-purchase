@@ -53,28 +53,28 @@ export const isSupportedNetwork = networkId => {
 export const getProvider = async reconnect => {
   try {
     let provider
-    if (
-      process.env.REACT_APP_STAGE === 'local' &&
-      process.env.REACT_APP_ENS_ADDRESS
-    ) {
-      const { providerObject } = await setup({
-        reloadOnAccountsChange: false,
-        customProvider: 'http://localhost:8545',
-        ensAddress: process.env.REACT_APP_ENS_ADDRESS
-      })
-      provider = providerObject
-      let labels = window.localStorage['labels']
-        ? JSON.parse(window.localStorage['labels'])
-        : {}
-      window.localStorage.setItem(
-        'labels',
-        JSON.stringify({
-          ...labels,
-          ...JSON.parse(process.env.REACT_APP_LABELS)
-        })
-      )
-      return provider
-    }
+    // if (
+    //   process.env.REACT_APP_STAGE === 'local' &&
+    //   process.env.REACT_APP_ENS_ADDRESS
+    // ) {
+    //   const { providerObject } = await setup({
+    //     reloadOnAccountsChange: false,
+    //     customProvider: 'http://localhost:8545',
+    //     ensAddress: process.env.REACT_APP_ENS_ADDRESS
+    //   })
+    //   provider = providerObject
+    //   let labels = window.localStorage['labels']
+    //     ? JSON.parse(window.localStorage['labels'])
+    //     : {}
+    //   window.localStorage.setItem(
+    //     'labels',
+    //     JSON.stringify({
+    //       ...labels,
+    //       ...JSON.parse(process.env.REACT_APP_LABELS)
+    //     })
+    //   )
+    //   return provider
+    // }
 
     const safe = await safeInfo();
 
