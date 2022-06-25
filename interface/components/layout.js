@@ -150,7 +150,7 @@ function Layout({ children }) {
                     </ul>
                 </div>
             </div>
-            <div className="sticky top-0 z-40 absolute bg-gray-800 shadow md:h-full flex-col justify-between sm:hidden  transition duration-150 ease-in-out" id="mobile-nav">
+            <div className="relative top-0 z-40 absolute bg-gray-800 shadow md:h-full flex-col justify-between sm:hidden  transition duration-150 ease-in-out" id="mobile-nav">
                 
                 <div className="flex justify-between px-8 py-4 border-t border-gray-700 items-center">
                     <div className="text-center cursor-pointer">
@@ -177,7 +177,7 @@ function Layout({ children }) {
             </div>
             <Transition.Root show={mobileFiltersOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-40 sm:hidden" onClose={setMobileFiltersOpen}>
-                    {/* <Transition.Child
+                    <Transition.Child
                         as={Fragment}
                         enter="transition-opacity ease-linear duration-300"
                         enterFrom="opacity-0"
@@ -187,10 +187,10 @@ function Layout({ children }) {
                         leaveTo="opacity-0"
                     >
                         <div className="fixed m-0 inset-0 bg-black bg-opacity-25" />
-                    </Transition.Child> */}
+                    </Transition.Child>
 
                     <div className="fixed inset-0 flex z-40">
-                        {/* <Transition.Child
+                        <Transition.Child
                             as={Fragment}
                             enter="transition ease-in-out duration-300 transform"
                             enterFrom="-translate-x-full"
@@ -198,7 +198,7 @@ function Layout({ children }) {
                             leave="transition ease-in-out duration-300 transform"
                             leaveFrom="translate-x-0"
                             leaveTo="-translate-x-full"
-                        > */}
+                        >
                             <Dialog.Panel className="relative max-w-xs w-full h-full bg-white shadow-xl py-4 flex flex-col overflow-y-auto">
                                 <div className="px-4 flex items-center justify-between">
                                     <h2 className="text-lg font-medium text-gray-900">Menu</h2>
@@ -298,7 +298,7 @@ function Layout({ children }) {
                                     </div>
                                 </div>
                             </Dialog.Panel>
-                        {/* </Transition.Child> */}
+                        </Transition.Child>
                     </div>
                 </Dialog>
             </Transition.Root>
