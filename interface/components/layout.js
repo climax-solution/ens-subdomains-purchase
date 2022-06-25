@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -6,74 +6,42 @@ import NetworkInformation from "./network-information";
 import { useAppContext } from "../context/state";
 import Loader from "./loader";
 import {NotificationContainer} from 'react-notifications';
-import Dropdown from "./dropdown";
+import { Dialog, Disclosure, Transition } from '@headlessui/react'
+import { CheckCircleIcon, ChevronDownIcon, ClockIcon, CogIcon, MenuIcon, MinusSmIcon, PlusSmIcon, QuestionMarkCircleIcon, ShoppingCartIcon, CollectionIcon, XIcon, ArchiveIcon } from "@heroicons/react/outline";
 
-const pendings = [
+const subCategories = [
     {
-        name: "reserve",
-        href: "/pending/reserve"
+        name: 'Explore Domains',
+        href: '/explore',
+        icon: <ShoppingCartIcon className="h-6 w-6"/>
     },
     {
-        name: "request",
-        href: "/pending/request"
-    }
-];
+        name: 'Manage Domains',
+        href: '/collected',
+        icon: <CollectionIcon className="h-6 w-6"/>
+    },
+]
 
-const accepts = [
+const filters = [
     {
-        name: "reserve",
-        href: "/accepted/reserve"
+      id: 'pending',
+      name: 'Pending List',
+      icon: <ClockIcon className="w-6 h-6"/>,
+      options: [
+        { href: 'reserve' },
+        { href: 'request' },
+      ]
     },
     {
-        name: "request",
-        href: "/accepted/request"
+      id: 'accepted',
+      name: 'Accepted List',
+      icon: <CheckCircleIcon className="w-6 h-6"/>,
+      options: [
+        { href: 'reserve' },
+        { href: 'request' },
+      ]
     }
-];
-
-const pending_icon = <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 icon icon-tabler icon-clock" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-<path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-</svg>;
-const accept_icon = <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 256 256" className="w-6 h-6" xmlSpace="preserve" fill="currentColor">
-<g transform="translate(128 128) scale(0.97 0.97)">
-    <g
-        style={{
-            stroke: "none",
-            strokeWidth: 0,
-            strokeDasharray: "none",
-            strokeLinecap: "butt",
-            strokeLinejoin: "miter",
-            strokeMiterlimit: 10,
-            fillRule: "nonzero",
-            opacity: 1
-        }}
-        transform="translate(-130.05 -130.05000000000004) scale(2.89 2.89)"
-    >
-    <path
-        d="M 89.328 2.625 L 89.328 2.625 c -1.701 -2.859 -5.728 -3.151 -7.824 -0.568 L 46.532 45.173 c -0.856 1.055 -2.483 0.997 -3.262 -0.115 l -8.382 -11.97 c -2.852 -4.073 -8.789 -4.335 -11.989 -0.531 l 0 0 c -2.207 2.624 -2.374 6.403 -0.408 9.211 l 17.157 24.502 c 2.088 2.982 6.507 2.977 8.588 -0.011 l 4.925 -7.07 L 89.135 7.813 C 90.214 6.272 90.289 4.242 89.328 2.625 z"
-        style={{
-            stroke: "none",
-            strokeWidth: 1,
-            strokeDasharray: "none",
-            strokeLinecap: "butt",
-            strokeLinejoin: "miter",
-            strokeMiterlimit: 10,
-            fillRule: "nonzero",
-            opacity: 1
-        }}
-        transform=" matrix(1 0 0 1 0 0) "
-        strokeLinecap="round"
-    />
-    <path
-        d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 6.072 0 11.967 1.19 17.518 3.538 c 2.034 0.861 2.986 3.208 2.125 5.242 c -0.859 2.035 -3.207 2.987 -5.242 2.126 C 54.842 8.978 49.996 8 45 8 C 24.598 8 8 24.598 8 45 c 0 20.402 16.598 37 37 37 c 20.402 0 37 -16.598 37 -37 c 0 -3.248 -0.42 -6.469 -1.249 -9.573 c -0.57 -2.134 0.698 -4.327 2.832 -4.897 c 2.133 -0.571 4.326 0.698 4.896 2.833 C 89.488 37.14 90 41.055 90 45 C 90 69.813 69.813 90 45 90 z"
-        style={{
-            stroke: "none", strokeWidth: 0.5, strokeDasharray: "none", strokeLinecap: "butt", strokeLinejoin: "miter", strokeMiterlimit: 10, fillRule: "nonzero", opacity: 1
-        }}
-        transform=" matrix(1 0 0 1 0 0) "
-        strokeLinecap="round"
-    />
-    </g>
-</g>
-</svg>;
+]
 
 function Layout({ children }) {
 
@@ -81,6 +49,7 @@ function Layout({ children }) {
     const { isLoading } = useAppContext();
     const [ isPendingDown, setPendingDown ] = useState(false);
     const [ isAcceptedDown, setAcceptedDown] = useState(false);
+    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
     return (
         <div className="flex flex-no-wrap xxs:flex-col sm:flex-row">
@@ -107,38 +76,21 @@ function Layout({ children }) {
                     <ul className="mt-6 w-40 mx-auto">
                         <li className={`flex w-full justify-between cursor-pointer items-center mb-6 ${path.slice(1) == 'explore' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500"}`}>
                             <div className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 icon icon-tabler icon-shopping-cart" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
+                                <ShoppingCartIcon className="w-6 h-6"/>
                                 <Link href="/explore" className="text-sm ml-2">Explore Domains</Link>
                             </div>
                         </li>                        
                         <li className={"flex w-full justify-between cursor-pointer items-center mb-6 " + ((path.slice(1)).indexOf("collected") == 0 ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
                             <div className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
+                                <CollectionIcon className="w-6 h-6"/>
                                 <Link href="/collected" className="text-sm  ml-2">Manage Domains</Link>
                             </div>
                         </li>
                         <li className={"flex w-full justify-between flex-col cursor-pointer items-center mb-6 " + (path.slice(1, 8) == 'pending' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
                             <div className="flex w-full items-center" onClick={() => setPendingDown(!isPendingDown)}>
-                                {pending_icon}
-                                <a>Pending List</a>
-                                <svg
-                                    aria-hidden="true"
-                                    focusable="false"
-                                    data-prefix="fas"
-                                    className="w-3 h-3 ml-3"
-                                    role="img"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                >
-                                    <path
-                                        fill="currentColor"
-                                        d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
-                                    />
-                                </svg>
+                                <ClockIcon className="w-6 h-6"/>
+                                <a>Pending List </a>
+                                <ChevronDownIcon className="w-6 h-6 ml-4"/>
                             </div>
                             <ul className={"relative accordion-collapse collapse " + (isPendingDown ? "" : "hidden")}>
                                 <li className="relative">
@@ -151,23 +103,9 @@ function Layout({ children }) {
                         </li>
                         <li className={"flex w-full justify-between flex-col cursor-pointer items-center mb-6 " + (path.slice(1, 9) == 'accepted' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
                             <div className="flex w-full items-center" onClick={() => setAcceptedDown(!isAcceptedDown)}>
-                                {accept_icon}
-
+                                <CheckCircleIcon className="w-6 h-6"/>
                                 <a>Accepted List</a>
-                                <svg
-                                    aria-hidden="true"
-                                    focusable="false"
-                                    data-prefix="fas"
-                                    className="w-3 h-3 ml-3"
-                                    role="img"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                >
-                                    <path
-                                        fill="currentColor"
-                                        d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
-                                    />
-                                </svg>
+                                <ChevronDownIcon className="w-6 h-6 ml-2"/>
                             </div>
                             <ul className={"relative accordion-collapse collapse " + (isAcceptedDown ? "" : "hidden")}>
                                 <li className="relative">
@@ -201,69 +139,169 @@ function Layout({ children }) {
                             </a>
                         </li>
                         <li className="cursor-pointer text-white pt-5 pb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                            <QuestionMarkCircleIcon className="w-6 h-6"/>
                         </li>
                         <li className="cursor-pointer text-white pt-5 pb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 icon icon-tabler icon-tabler-settings" width={20} height={20} viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" />
-                                <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                <circle cx={12} cy={12} r={3} />
-                            </svg>
+                            <CogIcon className="w-6 h-6"/>
                         </li>
                         <li className="cursor-pointer text-white pt-5 pb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 icon icon-tabler icon-tabler-archive" width={20} height={20} viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" />
-                                <rect x={3} y={4} width={18} height={4} rx={2} />
-                                <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
-                                <line x1={10} y1={12} x2={14} y2={12} />
-                            </svg>
+                            <ArchiveIcon className="w-6 h-6"/>
                         </li>
                     </ul>
                 </div>
             </div>
             <div className="sticky top-0 z-40 absolute bg-gray-800 shadow md:h-full flex-col justify-between sm:hidden  transition duration-150 ease-in-out" id="mobile-nav">
-                <div className="p-8 border-t border-gray-700">
-                    <ul className="w-full flex relative items-center justify-between bg-gray-800">
-                        <li className={`flex w-full justify-between cursor-pointer items-center xxs:justify-center ${path.slice(1) == 'explore' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500"}`}>
-                            <Link href="/explore">
-                                <a className="flex">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 icon icon-tabler icon-shopping-cart" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    {/* <span className="text-sm ml-2 xxs:hidden xs:inline">Explore Domains</span> */}
-                                </a>
-                            </Link>
-                        </li>
-                        <li className={"flex w-full justify-between cursor-pointer items-center xxs:justify-center " + ((path.slice(1)).indexOf("collected") == 0 ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
-                            <Link href="/collected">
-                                <a className="flex">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                    </svg>
-                                    {/* <span className="text-sm ml-2 xxs:hidden xs:inline">Manage Domains</span> */}
-                                </a>
-                            </Link>
-                            
-                        </li>
-                        <li className={"flex w-full justify-between cursor-pointer items-center xxs:justify-center " + (path.slice(1) == 'pending' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
-                            <Dropdown
-                                list={pendings}
-                                icon={pending_icon}
-                                type={"pending"}
-                            />
-                        </li>
-                        <li className={"flex w-full justify-between cursor-pointer items-center xxs:justify-center " + (path.slice(1) == 'pending' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
-                            <Dropdown
-                                list={accepts}
-                                icon={accept_icon}
-                                type={"accepted"}
-                            />
-                        </li>
-                    </ul>
+                
+                <div className="flex justify-between px-8 py-4 border-t border-gray-700 items-center">
+                    <div className="text-center cursor-pointer">
+                        <Link href="/" className="shadow-lg hover:shadow-cyan-500/50">
+                            <a>
+                                <Image
+                                    src="/logo.png"
+                                    width="64"
+                                    height="57"
+                                    alt=""
+                                    className="logo-icon"
+                                    onDragStart={ (e) => e.preventDefault() }
+                                />
+                            </a>
+                        </Link>
+                    </div>
+                    <button
+                        className="w-12 h-12 p-2 border-2 rounded border-slate-200 text-white cursor-pointer"
+                        onClick={() => setMobileFiltersOpen(true)}
+                    >
+                        <MenuIcon className="w-7 h-7"/>
+                    </button>
                 </div>
             </div>
+            <Transition.Root show={mobileFiltersOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-40 sm:hidden" onClose={setMobileFiltersOpen}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="transition-opacity ease-linear duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="transition-opacity ease-linear duration-300"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 flex z-40">
+                    <Transition.Child
+                        as={Fragment}
+                        enter="transition ease-in-out duration-300 transform"
+                        enterFrom="translate-x-full"
+                        enterTo="translate-x-0"
+                        leave="transition ease-in-out duration-300 transform"
+                        leaveFrom="translate-x-0"
+                        leaveTo="translate-x-full"
+                    >
+                        <Dialog.Panel className="ml-auto relative max-w-xs w-full h-full bg-white shadow-xl py-4 flex flex-col overflow-y-auto">
+                            <div className="px-4 flex items-center justify-between">
+                                <h2 className="text-lg font-medium text-gray-900">Menu</h2>
+                                <button
+                                type="button"
+                                className="-mr-2 w-10 h-10 bg-white p-2 rounded-md flex items-center justify-center text-gray-400"
+                                onClick={() => setMobileFiltersOpen(false)}
+                                >
+                                    <XIcon className="w-6 h-6"/>
+                                </button>
+                            </div>
+
+                            {/* Filters */}
+                            <div className="flex flex-col h-full justify-between">
+                            <form className="mt-4 border-t border-gray-200 px-4">
+                                <div className="py-4">
+                                    <NetworkInformation className="text-black"/>
+                                </div>
+                                <ul role="list" className="font-medium text-gray-900 px-2 py-3">
+                                    {subCategories.map((category) => (
+                                        <li key={category.name} className="my-2 flex items-center gap-2">
+                                            <Link href={category.href}>
+                                                <>
+                                                    {category.icon}
+                                                    <a className="block px-2 py-2 capitalize">
+                                                        {category.name}
+                                                    </a>
+                                                </>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                                {filters.map((section) => (
+                                    <Disclosure as="div" key={section.id} className="border-gray-200 px-4 pb-6">
+                                        {({ open }) => (
+                                        <>
+                                            <h3 className="-mx-2 -my-3 flow-root">
+                                                <Disclosure.Button className="pr-2 py-3 bg-white w-full flex items-center justify-between text-gray-400 hover:text-gray-500">
+                                                    <span className="font-medium text-gray-900 flex gap-2 items-center">{section.icon}{section.name}</span>
+                                                    <span className="ml-6 flex items-center">
+                                                    {open ? (
+                                                        <MinusSmIcon className="h-5 w-5" aria-hidden="true" />
+                                                    ) : (
+                                                        <PlusSmIcon className="h-5 w-5" aria-hidden="true" />
+                                                    )}
+                                                    </span>
+                                                </Disclosure.Button>
+                                                </h3>
+                                            <Disclosure.Panel className="pt-6">
+                                                <ul className="space-y-6 font-medium text-gray-900 px-2 py-3">
+                                                    {section.options.map((option, optionIdx) => (
+                                                        <li key={option.href + optionIdx}>
+                                                            <Link href={`/${section.id}/${option.href}`}>
+                                                                <a className="block px-2 py-3 capitalize">
+                                                                    {option.href}
+                                                                </a>
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </Disclosure.Panel>
+                                        </>
+                                        )}
+                                    </Disclosure>
+                                ))}
+                            </form>
+                                <div className="px-8 border-t border-gray-700">
+                                    <ul className="w-full flex items-center justify-between">
+                                        <li className="cursor-pointer text-gray pt-5">
+                                            <a href="https://twitter.com/EnsExpress" target="_blank" rel="noreferrer">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    x="0px"
+                                                    y="0px"
+                                                    width={24}
+                                                    height={24}
+                                                    viewBox="0 0 48 48"
+                                                    style={{ fill: "#000000" }}
+                                                >
+                                                    <path
+                                                        fill="#03A9F4"
+                                                        d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"
+                                                    />
+                                                </svg>
+                                            </a>
+                                        </li>
+                                        <li className="cursor-pointer text-gray pt-5">
+                                            <QuestionMarkCircleIcon className="w-6 h-6"/>
+                                        </li>
+                                        <li className="cursor-pointer text-gray pt-5">
+                                            <CogIcon className="w-6 h-6"/>
+                                        </li>
+                                        <li className="cursor-pointer text-gray pt-5">
+                                            <ArchiveIcon className="w-6 h-6"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </Dialog.Panel>
+                    </Transition.Child>
+                    </div>
+                </Dialog>
+            </Transition.Root>
             {/* Sidebar ends */}
             {/* Remove class [ h-64 ] when adding a card block */}
             <div className="w-full mx-auto h-full min-h-screen relative max-h-screen overflow-auto">
