@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 
 const Dropdown = ({ list, icon, type }) => {
     const { pathname: path, query } = useRouter();
-    console.log(path, query);
     return (
         <Popover>
             {({ open }) => (
