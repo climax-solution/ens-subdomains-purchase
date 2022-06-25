@@ -123,7 +123,7 @@ const Collect = ({ labelName, name, id, listed, update }) => {
     return (
         <>
             { isLoading ? <GearLoading/> : "" }
-            <div className="sm:max-w-15rem inline-block w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
+            <div className="xs:max-w-15rem inline-block w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
                 <div className="flex flex-col items-center pb-10">
                     <span className="w-full aspect-square">
                         <img

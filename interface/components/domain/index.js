@@ -27,7 +27,7 @@ const Domain = ({ labelhash }) => {
         <>
             {
                 isLoading ?
-                <div className="sm:max-w-15rem inline-block w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                <div className="xs:max-w-15rem inline-block w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
                     <div className="flex flex-col w-full items-center pb-10 animate-pulse">
                         <span className="w-full aspect-square bg-gray-300"/>
                         <div className="mb-1 mt-5 h-8 bg-gray-300 w-4/6 rounded-lg "/>
@@ -37,7 +37,7 @@ const Domain = ({ labelhash }) => {
                 :
                 (
                     Object.keys(info).length &&
-                    <div className="sm:max-w-15rem inline-block w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                    <div className="xs:max-w-15rem inline-block w-full bg-white rounded-lg border border-gray-100 shadow-md dark:bg-gray-800 dark:border-gray-700">
                         <div className="flex flex-col items-center pb-10">
                             <span className="w-full aspect-square">
                                 <img
