@@ -153,6 +153,12 @@ function Layout({ children }) {
             <div className="relative top-0 z-40 absolute bg-gray-800 shadow md:h-full flex-col justify-between sm:hidden  transition duration-150 ease-in-out" id="mobile-nav">
                 
                 <div className="flex justify-between px-8 py-4 border-t border-gray-700 items-center">
+                    <button
+                        className="w-12 h-12 p-2 border-2 rounded border-slate-200 text-white cursor-pointer"
+                        onClick={() => setMobileFiltersOpen(true)}
+                    >
+                        <MenuIcon className="w-7 h-7"/>
+                    </button>
                     <div className="text-center cursor-pointer">
                         <Link href="/" className="shadow-lg hover:shadow-cyan-500/50">
                             <a>
@@ -167,12 +173,6 @@ function Layout({ children }) {
                             </a>
                         </Link>
                     </div>
-                    <button
-                        className="w-12 h-12 p-2 border-2 rounded border-slate-200 text-white cursor-pointer"
-                        onClick={() => setMobileFiltersOpen(true)}
-                    >
-                        <MenuIcon className="w-7 h-7"/>
-                    </button>
                 </div>
             </div>
             <Transition.Root show={mobileFiltersOpen} as={Fragment}>
@@ -201,7 +201,6 @@ function Layout({ children }) {
                         >
                             <Dialog.Panel className="relative max-w-xs w-full h-full bg-white shadow-xl py-4 flex flex-col overflow-y-auto">
                                 <div className="px-4 flex items-center justify-between">
-                                    <h2 className="text-lg font-medium text-gray-900">Menu</h2>
                                     <button
                                     type="button"
                                     className="-mr-2 w-10 h-10 bg-white p-2 rounded-md flex items-center justify-center text-gray-400"
@@ -209,6 +208,7 @@ function Layout({ children }) {
                                     >
                                         <XIcon className="w-6 h-6"/>
                                     </button>
+                                    <h2 className="text-lg w-full text-center font-medium text-gray-900">Menu</h2>
                                 </div>
 
                                 {/* Filters */}
