@@ -17,7 +17,7 @@ const NETWORK_INFORMATION_QUERY = gql`
   }
 `
 
-function NetworkInformation() {
+function NetworkInformation({ className = 'text-white' }) {
   const { setAccount, setNetwork, setWEB3, setDomainContract, setRegistrarContract } = useAppContext();
   const {
     data: { accounts, network }
@@ -49,12 +49,12 @@ function NetworkInformation() {
   }
 
   return (
-    <div className='flex flex-col gap-2 items-center'>
-        <span className='text-white'>
+    <div className={'flex flex-col gap-2 items-center ' + className}>
+        <span>
         { (!wallets || !wallets.length) ? "Main Network (Read Only)" : network + "(" + shorten(wallets[0]) + ")" }
         </span>
         <button
-        className="px-4 py-1 w-38 text-sm text-white font-semibold rounded-lg border border-white-600 bg-transparent"
+        className="px-4 py-1 w-38 text-sm font-semibold rounded-lg border border-white-600 bg-transparent"
         onClick={ (!wallets || !wallets.length) ? connectProvider : disconnectProvider}
         >{ ((!wallets || !wallets.length) ? "Connect" : "Disconnect") + " Wallet"}</button>
     </div>
