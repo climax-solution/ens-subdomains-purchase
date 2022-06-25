@@ -219,14 +219,14 @@ function Layout({ children }) {
                                 </div>
                                 <ul role="list" className="font-medium text-gray-900 px-2 py-3">
                                     {subCategories.map((category) => (
-                                        <li key={category.name} className="my-2 flex items-center gap-2">
-                                            <Link href={category.href}>
-                                                <>
+                                        <li key={category.name} className="my-2" onClick={() => setMobileFiltersOpen(false)}>
+                                            <Link href={`${category.href}`}>
+                                                <a className="block py-2 capitalize flex items-center gap-2">
+                                                    <>
                                                     {category.icon}
-                                                    <a className="block px-2 py-2 capitalize">
-                                                        {category.name}
-                                                    </a>
-                                                </>
+                                                    {category.name}
+                                                    </>
+                                                </a>
                                             </Link>
                                         </li>
                                     ))}
@@ -250,7 +250,7 @@ function Layout({ children }) {
                                             <Disclosure.Panel className="pt-6">
                                                 <ul className="space-y-6 font-medium text-gray-900 px-2 py-3">
                                                     {section.options.map((option, optionIdx) => (
-                                                        <li key={option.href + optionIdx}>
+                                                        <li key={option.href + optionIdx} onClick={() => setMobileFiltersOpen(false)}>
                                                             <Link href={`/${section.id}/${option.href}`}>
                                                                 <a className="block px-2 py-3 capitalize">
                                                                     {option.href}
