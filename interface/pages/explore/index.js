@@ -68,7 +68,7 @@ const ExploreDomains = () => {
             {
               isLoading ? <Loader/>
               :<>
-                <div className="flex gap-2 justify-center items-center mt-6">
+                <div className="flex flex-wrap gap-2 justify-center items-center mt-6">
                   <input
                     type="text"
                     className="shadow-md border border-violet-300 text-white outline-0 py-2 px-4 rounded-full bg-transparent w-96"
