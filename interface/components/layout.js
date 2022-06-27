@@ -152,7 +152,7 @@ function Layout({ children }) {
                     </ul>
                 </div>
             </div>
-            <div className="sticky top-0 z-40 absolute bg-gray-800 shadow md:h-full flex-col justify-between sm:hidden  transition duration-150 ease-in-out" id="mobile-nav">
+            <div className="sticky top-0 z-40 bg-gray-800 shadow md:h-full flex-col justify-between sm:hidden  transition duration-150 ease-in-out" id="mobile-nav">
                 
                 <div className="flex justify-between px-8 py-4 border-t border-gray-700 items-center">
                     <button

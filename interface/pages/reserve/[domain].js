@@ -70,7 +70,7 @@ const Pricing = () => {
                     {
                         prices.length ? (
                             <>
-                                <h1 className="text-white text-center text-7xl font-bold text-shadow-md">{domain}</h1>
+                                <h1 className="text-white text-center sm:text-5xl xs:text-3xl xxs:text-xl text-7xl font-bold text-shadow-md">{domain}</h1>
                                 <div className="flex flex-wrap w-full gap-2 p-4 justify-evenly items-center">
                                     {
                                         list.map((item, idx) => (
