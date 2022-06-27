@@ -10,8 +10,8 @@ import Pagination from "../../components/pagination";
 import { useRouter } from "next/router";
 
 const people = [
-  { id: 1, name: 'Oldest', isLatest: false },
-  { id: 2, name: 'Latest', isLatest: true },
+  { id: 1, name: 'Latest', isLatest: true },
+  { id: 2, name: 'Oldest', isLatest: false },
 ]
 
 const ExploreDomains = () => {
