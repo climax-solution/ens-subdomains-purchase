@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { useQuery  } from '@apollo/client'
 import moment from "moment";
 import Collect from "../../components/collect";
@@ -15,6 +16,9 @@ import { useBlock } from "../../utility/hooks";
 import Loader from "../../components/loader";
 import { useAppContext } from "../../context/state";
 import Empty from "../../components/empty";
+import Pagination from "../../components/pagination";
+import { getQueryName } from "../../utility/utils/graphql";
+import getClient from "../../utility/apollo/apolloClient";
 
 function filterOutReverse(domains) {
   return domains.filter(domain => domain.parent)
@@ -82,6 +86,7 @@ function useDomains({
 
 const Domains = () => {
 
+  const { query } = useRouter();
   const { WEB3, account, registrarContract } = useAppContext();
   const domainType = 'registrant';
 
@@ -93,8 +98,9 @@ const Domains = () => {
     direction: 'asc'
   })
 
+  const _account = "0x53f299324a26f7ddace0630d8f5eba54c55f742e";
   useEffect(() => {
-    if (registrarContract && account) {
+    if (registrarContract && _account) {
       fetchListedDomains();
     }
   },[registrarContract, isUpdated]);
@@ -104,7 +110,7 @@ const Domains = () => {
 
     let _list = [];
     for (let i = 0; i < domains.length; i ++) {
-      if ((domains[i].owner).toLowerCase() == account.toLowerCase()) {
+      if ((domains[i].owner).toLowerCase() == normaliseAddress(_account)) {
         const domain = domains[i];
         _list.push({
           name: domain.name + '.eth',
@@ -118,8 +124,8 @@ const Domains = () => {
 
   }
 
-    const normalisedAddress = normaliseAddress(account)
-    const pageQuery = ""
+    const normalisedAddress = normaliseAddress(_account)
+    const pageQuery = query.page;
     const page = pageQuery ? parseInt(pageQuery) : 1
     const { block } = useBlock()
 
@@ -183,23 +189,103 @@ const Domains = () => {
     });
 
     return (
+      <div className="flex flex-col gap-4">
         <div className="flex flex-wrap justify-even gap-2 p-10">
-        {
-            domains.map(({domain: item}, idx) => (
-                <Collect
-                  key={idx}
-                  name={item.name}
-                  labelName={item.labelName}
-                  listed={item.listed}
-                  id={item.labelhash.toString(10)}
-                  update={() => setUpdated(!isUpdated)}
-                />
-            ))
+          {
+              domains.map(({domain: item}, idx) => (
+                  <Collect
+                    key={idx}
+                    name={item.name}
+                    labelName={item.labelName}
+                    listed={item.listed}
+                    id={item.labelhash.toString(10)}
+                    update={() => setUpdated(!isUpdated)}
+                  />
+              ))
+          }
+
+          { !domains.length && <Empty/> }
+        </div>
+        <Paginations expiryDate={expiryDate} initialPage={page}/>
+
+      </div>
+    )
+}
+
+const Paginations = ({ expiryDate, initialPage }) => {
+  const { account } = useAppContext();
+
+  const { totalPages } = useTotalPages({
+      resultsPerPage: 25,
+      variables: { id: "0x53f299324a26f7ddace0630d8f5eba54c55f742e", expiryDate },
+      query: GET_REGISTRATIONS_SUBGRAPH
+  });
+
+  return (
+    <Pagination expiryDate={expiryDate} initialPage={initialPage} totalPages={totalPages}/>
+  )
+}
+
+export function useTotalPages({ resultsPerPage, query, variables }) {
+  const limit = 1000
+  const [loading, setLoading] = useState(true)
+  const [totalResults, setTotalResults] = useState(0)
+  const client = getClient()
+  const queryName = getQueryName(query)
+  const supportedQueries = ['getRegistrations', 'getDomains']
+
+  useEffect(() => {
+    async function getResults(limit) {
+      let skip = 0
+
+      async function queryFunc(totalResults) {
+        const { data } = await client.query({
+          query,
+          variables: {
+            ...variables,
+            skip,
+            first: limit
+          }
+        })
+
+        let resultsLength = 0
+
+        if (queryName === 'getRegistrations') {
+          resultsLength = data.account?.registrations?.length || 0
         }
 
-        { !domains.length && <Empty/> }
-        </div>
-    )
+        if (queryName === 'getDomains') {
+          resultsLength = data.account?.domains?.length || 0
+        }
+
+        skip = skip + limit
+        const cumulativeResults = totalResults + resultsLength
+
+        if (resultsLength === limit) {
+          return queryFunc(cumulativeResults)
+        }
+        return cumulativeResults
+      }
+
+      const total = await queryFunc(0)
+      return total
+    }
+
+    if (!supportedQueries.includes(queryName)) {
+      setTotalResults(0)
+      setLoading(false)
+    } else {
+      getResults(limit).then(res => {
+        setTotalResults(res)
+        setLoading(false)
+      })
+    }
+  }, [client, query, variables])
+
+  return {
+    totalPages: Math.ceil(totalResults / resultsPerPage),
+    loading
+  }
 }
 
 const Collected = () => {

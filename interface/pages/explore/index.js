@@ -6,6 +6,8 @@ import Domain from "../../components/domain";
 import Loader from "../../components/loader";
 import { useAppContext } from '../../context/state';
 import Empty from "../../components/empty";
+import Pagination from "../../components/pagination";
+import { useRouter } from "next/router";
 
 const people = [
   { id: 1, name: 'Oldest', isLatest: false },
@@ -15,6 +17,7 @@ const people = [
 const ExploreDomains = () => {
   
     const { WEB3, registrarContract } = useAppContext();
+    const { query: querys } = useRouter();
     const [domains, setDomains] = useState([]);
     const [current, setCurrent] = useState([]);
     const [isLoading, setLoading] = useState(true);
@@ -61,8 +64,9 @@ const ExploreDomains = () => {
             .toLowerCase()
             .replace(/\s+/g, '')
             .includes(query.toLowerCase().replace(/\s+/g, ''))
-        )
+    )
 
+    const activePage = parseInt(querys.page) ? parseInt(querys.page) : 1;
     return (
         <div className="flex flex-col gap-3 p-4">
             {
@@ -144,7 +148,7 @@ const ExploreDomains = () => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {
-                    current.map((item, idx) => (
+                    [...current.slice(25 * (activePage - 1), 25 * activePage)].map((item, idx) => (
                         <Domain
                           key={idx}
                           labelhash={WEB3.utils.sha3(item.name)
@@ -152,8 +156,12 @@ const ExploreDomains = () => {
                     ))
                   }
                   {
-                    !current.length && <Empty/>
+                    ![...current.slice(25 * (activePage - 1), 25 * activePage)].length && <Empty/>
                   }
+                  <Pagination
+                    initialPage={activePage}
+                    totalPages={Math.ceil(current.length / 25)}
+                  />
                 </div>
               </>
             }
