@@ -213,10 +213,9 @@ const Domains = () => {
 
 const Paginations = ({ expiryDate, initialPage }) => {
   const { account } = useAppContext();
-
   const { totalPages } = useTotalPages({
       resultsPerPage: 25,
-      variables: { id: account, expiryDate },
+      variables: { id: normaliseAddress(account), expiryDate },
       query: GET_REGISTRATIONS_SUBGRAPH
   });
 
