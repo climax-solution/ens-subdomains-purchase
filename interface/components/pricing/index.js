@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAppContext } from "../../context/state";
 import GearLoading from "../../components/loader/gear";
 import { NotificationManager } from "react-notifications";
+import Image from "next/image";
 
 const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
 
@@ -36,9 +37,14 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
                         <span className="mr-3 text-lg md:text-xl text-coolGray-800 font-medium">{ level }</span>
                         { popular && <span className="inline-block py-px px-2 text-xs leading-5 text-white bg-yellow-500 font-medium uppercase rounded-full">popular</span> }
                     </div>
-                    <div className="mb-6 text-center">
+                    <div className="flex flex-col text-center">
+                        <Image
+                            src={"/eth-icon.svg"}
+                            width="50"
+                            height="50"
+                            alt=""
+                        />
                         <span className="text-6xl md:text-7xl text-coolGray-900 font-semibold">{ price }</span>
-                        <span className="ml-2 text-3xl text-coolGray-900 font-bold">ETH</span>
                     </div>
                     <p className="mb-6 text-coolGray-400 text-center font-medium">{text}</p>
                     <div className="text-center">
