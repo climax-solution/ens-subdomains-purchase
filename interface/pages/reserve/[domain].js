@@ -63,23 +63,32 @@ const Pricing = () => {
     }, [registrarContract, domain]);
 
     return (
-        <div className="flex flex-wrap gap-2 p-4 justify-evenly h-screen items-center">
+        <div className="flex flex-col items-center justify-center h-screen gap-7">
             {
                 isLoading ? <Loader/>
                 : <>
                     {
-                        prices.length ? list.map((item, idx) => (
-                            <PricingItem
-                                level={item.level}
-                                price={WEB3.utils.fromWei(prices[idx])}
-                                text={item.text}
-                                period={item.period}
-                                popular={item.popular}
-                                labelhash={labelhash}
-                                ite={idx}
-                                key={idx}
-                            />
-                        )) : <Empty/>
+                        prices.length ? (
+                            <>
+                                <h1 className="text-white text-center text-7xl font-bold text-shadow-md">{domain}</h1>
+                                <div className="flex flex-wrap w-full gap-2 p-4 justify-evenly items-center">
+                                    {
+                                        list.map((item, idx) => (
+                                            <PricingItem
+                                                level={item.level}
+                                                price={WEB3.utils.fromWei(prices[idx])}
+                                                text={item.text}
+                                                period={item.period}
+                                                popular={item.popular}
+                                                labelhash={labelhash}
+                                                ite={idx}
+                                                key={idx}
+                                            />
+                                        ))
+                                    }
+                                </div>
+                            </>
+                        ) : <Empty/>
                     }
                 </>
             }

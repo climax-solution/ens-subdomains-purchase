@@ -36,7 +36,7 @@ const ExploreDomains = () => {
       let _domains = await registrarContract.methods.queryEntireDomains().call();
       //console.log(_domains);
       _domains = [..._domains];
-      
+      _domains = _domains.reverse();
       setDomains(_domains);
       setCurrent(_domains);
       setLoading(false);
@@ -52,7 +52,7 @@ const ExploreDomains = () => {
         _domains = _domains.filter(item => (item.name + ".eth").indexOf(domainName.toLowerCase()) > -1);
       }
 
-      if (selected.isLatest) _domains = _domains.reverse();
+      if (!selected.isLatest) _domains = _domains.reverse();
       setCurrent(_domains);
     }
 
