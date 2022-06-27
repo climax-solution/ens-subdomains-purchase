@@ -54,8 +54,9 @@ function NetworkInformation({ className = 'text-white' }) {
         { (!wallets || !wallets.length) ? "Main Network (Read Only)" : network + "(" + shorten(wallets[0]) + ")" }
         </span>
         <button
-        className="px-4 py-1 w-38 text-sm font-semibold rounded-lg border border-white-600 bg-transparent"
-        onClick={ (!wallets || !wallets.length) ? connectProvider : disconnectProvider}
+          className="px-4 py-1 w-38 text-sm font-semibold rounded-lg border border-white-600 bg-transparent"
+          onClick={ (!wallets || !wallets.length) ? connectProvider : disconnectProvider}
+          type="button"
         >{ ((!wallets || !wallets.length) ? "Connect" : "Disconnect") + " Wallet"}</button>
     </div>
   )
