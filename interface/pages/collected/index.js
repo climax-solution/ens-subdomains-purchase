@@ -98,9 +98,8 @@ const Domains = () => {
     direction: 'asc'
   })
 
-  const _account = "0x53f299324a26f7ddace0630d8f5eba54c55f742e";
   useEffect(() => {
-    if (registrarContract && _account) {
+    if (registrarContract && account) {
       fetchListedDomains();
     }
   },[registrarContract, isUpdated]);
@@ -110,7 +109,7 @@ const Domains = () => {
 
     let _list = [];
     for (let i = 0; i < domains.length; i ++) {
-      if ((domains[i].owner).toLowerCase() == normaliseAddress(_account)) {
+      if ((domains[i].owner).toLowerCase() == normaliseAddress(account)) {
         const domain = domains[i];
         _list.push({
           name: domain.name + '.eth',
@@ -124,7 +123,7 @@ const Domains = () => {
 
   }
 
-    const normalisedAddress = normaliseAddress(_account)
+    const normalisedAddress = normaliseAddress(account)
     const pageQuery = query.page;
     const page = pageQuery ? parseInt(pageQuery) : 1
     const { block } = useBlock()
@@ -217,7 +216,7 @@ const Paginations = ({ expiryDate, initialPage }) => {
 
   const { totalPages } = useTotalPages({
       resultsPerPage: 25,
-      variables: { id: "0x53f299324a26f7ddace0630d8f5eba54c55f742e", expiryDate },
+      variables: { id: account, expiryDate },
       query: GET_REGISTRATIONS_SUBGRAPH
   });
 
