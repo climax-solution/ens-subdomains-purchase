@@ -95,7 +95,7 @@ function Layout({ children }) {
                         </Link>
                     </div>
                     <NetworkInformation/>
-                    <ul className="mt-6 w-40 mx-auto">
+                    <ul className="mt-6 w-48 mx-auto">
                         <li className={`flex w-full justify-between cursor-pointer items-center mb-6 ${path.slice(1) == 'explore' ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500"}`}>
                             <div className="flex items-center">
                                 <ShoppingCartIcon className="w-6 h-6"/>
