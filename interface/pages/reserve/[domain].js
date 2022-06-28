@@ -63,14 +63,14 @@ const Pricing = () => {
     }, [registrarContract, domain]);
 
     return (
-        <div className="flex flex-col items-center h-full justify-center h-screen gap-7">
+        <div className="flex flex-col items-center h-full justify-center min-h-screen gap-7">
             {
                 isLoading ? <Loader/>
                 : <>
                     {
                         prices.length ? (
                             <>
-                                <h1 className="text-white text-center md:text-6xl sm:text-5xl xs:text-3xl xxs:text-xl text-7xl font-bold text-shadow-md">{domain}</h1>
+                                <h1 className="text-white text-center md:text-6xl sm:text-5xl xs:text-4xl xxs:text-3xl lg:text-7xl font-bold text-shadow-md">{domain}</h1>
                                 <div className="flex flex-wrap w-full gap-2 p-4 justify-evenly items-center">
                                     {
                                         list.map((item, idx) => (

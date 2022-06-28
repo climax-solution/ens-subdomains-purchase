@@ -42,7 +42,9 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
             NotificationManager.success("Success");
 
         } catch(err) {
-            //console.log(err);
+            if (err?.code != 4001) {
+                NotificationManager.error("Failed");
+            }
         }
         startLoading(false);
         update();
@@ -56,7 +58,9 @@ const ReserveItem = ({ data, tab, startLoading, update }) => {
             });
             NotificationManager.success("Success");
         } catch(err) {
-            //console.log(err);
+            if (err?.code != 4001) {
+                NotificationManager.error("Failed");
+            }
         }
         startLoading(false);
         update();

@@ -11,18 +11,27 @@ const PricingItem = ({ level, popular, price, text, labelhash, ite }) => {
     const [isLoading, setLoading] = useState(false);
 
     const reserve = async() => {
+        if (!account) {
+            NotificationManager.warning("Please connect wallet");
+            return;
+        }
         if (!subdomain) {
+            NotificationManager.warning("Please input subdomain correctly.");
             return;
         }
         setLoading(true);
         try {
+            const balance = await WEB3.eth.getBalance(account);
+            if (balance < price) throw new Error("Insufficient funds");
             await registrarContract.methods.reserveSubdomain(labelhash, subdomain, ite).send({
                 from: account,
                 value: WEB3.utils.toWei(price)
             });
             NotificationManager.success("Success");
         } catch(err) {
-            //console.log(err);
+            if (err?.code != 4001) {
+                NotificationManager.warning(err.message);
+            }
         }
         setLoading(false);
     }
