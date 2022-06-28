@@ -46,7 +46,7 @@ const filters = [
 function Layout({ children }) {
 
     const { pathname: path, query } = useRouter();
-    const { isLoading, registrarContract, account } = useAppContext();
+    const { isLoading, registrarContract, account, WEB3 } = useAppContext();
     const [ isPendingDown, setPendingDown ] = useState(false);
     const [ isAcceptedDown, setAcceptedDown] = useState(false);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
@@ -65,6 +65,7 @@ function Layout({ children }) {
                 return false;
             });
             setCount(reserves.length);
+
         }
 
         if (registrarContract && account) {
