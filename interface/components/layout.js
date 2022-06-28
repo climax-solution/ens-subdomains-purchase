@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -46,10 +46,32 @@ const filters = [
 function Layout({ children }) {
 
     const { pathname: path, query } = useRouter();
-    const { isLoading } = useAppContext();
+    const { isLoading, registrarContract, account } = useAppContext();
     const [ isPendingDown, setPendingDown ] = useState(false);
     const [ isAcceptedDown, setAcceptedDown] = useState(false);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        async function getPendingListCount() {
+            let reserves = await registrarContract.methods.queryReservesList().call();
+            reserves = [...reserves];
+            let domains = await registrarContract.methods.queryEntireDomains().call();
+            domains = [...domains];
+            domains = domains.filter(item => item.owner.toLowerCase() == account.toLowerCase());
+            reserves = reserves.filter(item => {
+                const filtered = domains.filter(domain => WEB3.utils.sha3(domain.name) == item.domain);
+                if (filtered.length) return true;
+                return false;
+            });
+            setCount(reserves.length);
+        }
+
+        if (registrarContract && account) {
+            getPendingListCount();
+        }
+        else setCount(0);
+    }, [registrarContract, path]);
 
     return (
         <div className="flex flex-no-wrap xxs:flex-col sm:flex-row">
@@ -90,14 +112,16 @@ function Layout({ children }) {
                             <div className="flex w-full items-center" onClick={() => setPendingDown(!isPendingDown)}>
                                 <ClockIcon className="w-6 h-6"/>
                                 <a>Pending List </a>
-                                <ChevronDownIcon className="w-6 h-6 ml-4"/>
+                                <ChevronDownIcon className="w-6 h-6"/>
+                                <span className="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">{count}</span>
                             </div>
                             <ul className={"relative accordion-collapse collapse " + (isPendingDown ? "" : "hidden")}>
                                 <li className="relative">
                                     <Link href="/pending/reserve"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("pending") == 0 && query.tab == 'reserve') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Reserves</a></Link>
                                 </li>
                                 <li className="relative">
-                                    <Link href="/pending/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("pending") == 0 && query.tab == 'request') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests</a></Link>
+                                    <Link href="/pending/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("pending") == 0 && query.tab == 'request') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests<span className="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 ml-2">{count}</span></a></Link>
+                                    
                                 </li>
                             </ul>
                         </li>
@@ -240,6 +264,7 @@ function Layout({ children }) {
                                                 <h3 className="-mx-2 -my-3 flow-root">
                                                     <Disclosure.Button className="pr-2 py-3 bg-white w-full flex items-center justify-between text-gray-400 hover:text-gray-500">
                                                         <span className="font-medium text-gray-900 flex gap-2 items-center">{section.icon}{section.name}</span>
+                                                        { section.id == "pending" ? <span className="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900">{count}</span> : ""}
                                                         <span className="ml-6 flex items-center">
                                                         {open ? (
                                                             <MinusSmIcon className="h-5 w-5" aria-hidden="true" />
@@ -248,14 +273,15 @@ function Layout({ children }) {
                                                         )}
                                                         </span>
                                                     </Disclosure.Button>
-                                                    </h3>
+                                                </h3>
                                                 <Disclosure.Panel className="pt-6">
                                                     <ul className="space-y-6 font-medium text-gray-900 px-2 py-3">
                                                         {section.options.map((option, optionIdx) => (
                                                             <li key={option.href + optionIdx} onClick={() => setMobileFiltersOpen(false)}>
                                                                 <Link href={`/${section.id}/${option.href}`}>
-                                                                    <a className="block px-2 py-3 capitalize">
+                                                                    <a className="block px-2 py-3 capitalize flex justify-between items-center">
                                                                         {option.href}
+                                                                        { (section.id == "pending" && option.href == "request") ? <span className="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900 ">{count}</span> : ""}
                                                                     </a>
                                                                 </Link>
                                                             </li>
