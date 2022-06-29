@@ -49,7 +49,9 @@ const ExploreDomains = () => {
     const filterENS = () => {
       let _domains = [...domains];
       if (domainName) {
-        _domains = _domains.filter(item => (item.name + ".eth").indexOf(domainName.toLowerCase()) > -1);
+        const isAddress = WEB3.utils.isAddress(domainName);
+        if (!isAddress) _domains = _domains.filter(item => (item.name + ".eth").indexOf(domainName.toLowerCase()) > -1);
+        else _domains = _domains.filter(item => (item.owner.toLowerCase()).indexOf(domainName.toLowerCase()) > -1);
       }
 
       if (!selected.isLatest) _domains = _domains.reverse();
@@ -57,13 +59,13 @@ const ExploreDomains = () => {
     }
 
     const filteredPeople =
-    query === ''
-      ? people
-      : people.filter((person) =>
-          person.name
-            .toLowerCase()
-            .replace(/\s+/g, '')
-            .includes(query.toLowerCase().replace(/\s+/g, ''))
+      query === ''
+        ? people
+        : people.filter((person) =>
+            person.name
+              .toLowerCase()
+              .replace(/\s+/g, '')
+              .includes(query.toLowerCase().replace(/\s+/g, ''))
     )
 
     const activePage = parseInt(querys.page) ? parseInt(querys.page) : 1;
