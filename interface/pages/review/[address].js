@@ -48,8 +48,7 @@ const Review = () => {
             });
             let star_sum = 0;
             _list.map(item => star_sum += parseInt(item.star) /_list.length );
-            console.log(_list);
-            setReviews(_list, star_sum);
+            setReviews(_list);
             setStar(star_sum);
             setLoading(false);
         }
