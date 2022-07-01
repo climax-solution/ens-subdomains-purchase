@@ -35,6 +35,7 @@ const Review = () => {
     const normalize = (str) => {
         return str.toLowerCase();
     }
+
     const fetchReviews = async() => {
         const isAddress = WEB3.utils.isAddress(query.address);
         if (isAddress) {
@@ -276,6 +277,7 @@ const Review = () => {
                                                 placeholder="Please input subdomain name"
                                                 value={subdomain}
                                                 onChange={(e) => setSubdomain(e.target.value)}
+                                                onBlur={() => setSubdomain(subdomain.trim())}
                                             />
                                             <textarea
                                                 className="border p-4 pr-28 focus-visible:border-indigo-500 shadow-sm sm:text-sm w-full outline-0 rounded-md mt-4"
@@ -283,6 +285,7 @@ const Review = () => {
                                                 rows="5"
                                                 value={comment}
                                                 onChange={(e) => setComment(e.target.value)}
+                                                onBlur={() => setComment(comment.trim())}
                                             />
                                         </div>
                                         <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
