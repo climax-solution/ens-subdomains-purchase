@@ -7,7 +7,7 @@ import { useAppContext } from "../context/state";
 import Loader from "./loader";
 import {NotificationContainer} from 'react-notifications';
 import { Dialog, Disclosure, Transition } from '@headlessui/react'
-import { CheckCircleIcon, ChevronDownIcon, ClockIcon, CogIcon, MenuIcon, MinusSmIcon, PlusSmIcon, QuestionMarkCircleIcon, ShoppingCartIcon, CollectionIcon, XIcon, ArchiveIcon } from "@heroicons/react/outline";
+import { CheckCircleIcon, ChevronDownIcon, ClockIcon, CogIcon, MenuIcon, MinusSmIcon, PlusSmIcon, QuestionMarkCircleIcon, ShoppingCartIcon, CollectionIcon, XIcon, ArchiveIcon, UserGroupIcon } from "@heroicons/react/outline";
 
 const subCategories = [
     {
@@ -20,6 +20,11 @@ const subCategories = [
         href: '/collected',
         icon: <CollectionIcon className="h-6 w-6"/>
     },
+    {
+        name: 'Users',
+        href: '/users',
+        icon: <UserGroupIcon className="h-6 w-6"/>
+    }
 ]
 
 const filters = [
@@ -140,6 +145,12 @@ function Layout({ children }) {
                                     <Link href="/accepted/request"><a className={"flex items-center text-lg py-4 pl-12 pr-6 h-6 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-slate-200 transition duration-300 ease-in-out " + ((path.slice(1).indexOf("accepted") == 0 && query.tab == 'request') ? "text-slate-200" : "text-gray-700")} data-mdb-ripple="true" data-mdb-ripple-color="dark">Requests</a></Link>
                                 </li>
                             </ul>
+                        </li>
+                        <li className={"flex w-full justify-between cursor-pointer items-center mb-6 " + ((path.slice(1)).indexOf("users") == 0 ? "text-white hover:text-white-600" : "text-gray-600 hover:text-gray-500")}>
+                            <div className="flex items-center">
+                                <UserGroupIcon className="w-6 h-6"/>
+                                <Link href="/users" className="text-sm ml-4">Users</Link>
+                            </div>
                         </li>
                     </ul>
                 </div>
