@@ -2,13 +2,17 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAppContext } from "../../context/state";
 import Link from "next/link";
+import { UserIcon } from "@heroicons/react/outline";
+import Star from "../review/star";
 
-const Domain = ({ labelhash }) => {
+const Domain = ({ labelhash, owner }) => {
 
     const { registrarContract, network } = useAppContext();
 
     const [info, setInfo] = useState({});
     const [isLoading, setLoading] = useState(true);
+    const [isRateGetting, setRateGetting] = useState(true);
+    const [star, setStar] = useState(0);
 
     useEffect(() => {
         async function fetchData() {
@@ -22,6 +26,31 @@ const Domain = ({ labelhash }) => {
         }
         if (registrarContract && labelhash) fetchData();
     }, [registrarContract, labelhash]);
+
+    useEffect(() => {
+        async function getStar() {
+            setRateGetting(true);
+            const _list = await axios.post(`${process.env.backend}/reviews/get-list`, { address: owner}).then(res => {
+                const { list } = res.data;
+                return list;
+            }).catch(err => {
+                return [];
+            });
+            let star_sum = 0;
+            _list.map(item => star_sum += parseInt(item.star) /_list.length );
+            setStar(Math.round(star_sum));
+            setRateGetting(false);
+        }
+        getStar();
+    }, [owner]);
+
+    const shorten = (str, cut = 4) => {
+        if (str) {
+          const res = str.substr(0, cut) + '...' + str.substr(-cut);
+          return res;
+        }
+        return "";
+    }
 
     return (
         <>
@@ -47,10 +76,19 @@ const Domain = ({ labelhash }) => {
                                 />
                             </span>
                             <h5 className="mb-1 mt-5 text-xl font-medium text-gray-900 dark:text-white">{info.name}</h5>
-                            <div className="flex mt-4 space-x-3 lg:mt-6">
+                            <div className="flex mt-2 space-x-3 lg:mt-2">
                                 <Link href={`/reserve/${info.name}`}>
-                                    <a className="inline-flex items-center py-2 px-4 text-sm font-medium text-center text-gray-900 bg-white rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">Reserve</a>
+                                    <a className="inline-flex items-center py-2 px-7 text-sm font-medium text-center text-gray-900 bg-white rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700">Reserve</a>
                                 </Link>
+                            </div>
+                            <div className="mt-2 flex gap-2 items-center p-2 border rounded-lg">
+                                <UserIcon className="w-4 h-4"/>
+                                <Link href={`/review/${owner}`}>
+                                    <a className="text-black text-sm hover:text-sky-600">{shorten(owner)}</a>
+                                </Link>
+                            </div>
+                            <div className="mt-3">
+                                { isRateGetting ? <span className="w-24 h-3 animate-pulse bg-gray-400 inline-block rounded-md"/> : <Star gold={star}/> }
                             </div>
                         </div>
                     </div>

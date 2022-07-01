@@ -153,8 +153,9 @@ const ExploreDomains = () => {
                     [...current.slice(25 * (activePage - 1), 25 * activePage)].map((item, idx) => (
                         <Domain
                           key={idx}
-                          labelhash={WEB3.utils.sha3(item.name)
-                        }/>
+                          labelhash={WEB3.utils.sha3(item.name)}
+                          owner={item.owner}
+                        />
                     ))
                   }
                   {
