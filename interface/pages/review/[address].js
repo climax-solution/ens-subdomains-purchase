@@ -214,7 +214,7 @@ const Review = () => {
                                 })
                             }
                             {
-                                !reviews.length && <Empty/>
+                                !reviews.length && <Empty text={"No Reviews"}/>
                             }
                         </>
                     }
