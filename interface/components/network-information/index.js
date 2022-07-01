@@ -5,6 +5,7 @@ import { useQuery } from '@apollo/client'
 import { connectProvider, disconnectProvider } from '../../utility/utils/providerUtils'
 import { useAppContext } from '../../context/state'
 import getWeb3 from '../../utility/getWeb3'
+import axios from 'axios'
 
 const NETWORK_INFORMATION_QUERY = gql`
   query getNetworkInfo @client {
@@ -36,6 +37,7 @@ function NetworkInformation({ className = 'text-white' }) {
       setWEB3(web3);
       setDomainContract(ENSDomain);
       setRegistrarContract(SubdomainReg);
+      if (accounts) await createNewUser(accounts[0]);
     }
     fetchInstance();
   }, [network, accounts])
@@ -48,16 +50,24 @@ function NetworkInformation({ className = 'text-white' }) {
       return "";
   }
 
+  const createNewUser = async(address) => {
+    await axios.post(`${process.env.backend}/users/create-new-user`, { address }).then(res => {
+
+    }).catch(err => {
+
+    })
+  }
+
   return (
     <div className={'flex flex-col gap-2 items-center ' + className}>
         <span>
-        { (!wallets || !wallets.length) ? "Main Network (Read Only)" : network + "(" + shorten(wallets[0]) + ")" }
+        { (!accounts || !accounts.length) ? "Main Network (Read Only)" : network + "(" + shorten(accounts[0]) + ")" }
         </span>
         <button
           className="px-4 py-1 w-38 text-sm font-semibold rounded-lg border border-white-600 bg-transparent"
-          onClick={ (!wallets || !wallets.length) ? connectProvider : disconnectProvider}
+          onClick={ (!accounts || !accounts.length) ? connectProvider : disconnectProvider}
           type="button"
-        >{ ((!wallets || !wallets.length) ? "Connect" : "Disconnect") + " Wallet"}</button>
+        >{ ((!accounts || !accounts.length) ? "Connect" : "Disconnect") + " Wallet"}</button>
     </div>
   )
 }
