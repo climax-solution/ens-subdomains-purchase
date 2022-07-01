@@ -3,16 +3,29 @@ const { check_zero, validate_address } = require('../../helper');
 var router = express.Router();
 var User = require('../../models/users');
 /* GET users listing. */
-router.get('/get-list', async function(req, res, next) {
+router.post('/get-list', async function(req, res) {
   try {
     const list = await User.find();
-    res.json(200).json({
+    res.status(200).json({
       list
     });
   } catch(err) {
-    res.json(400).json({ list: [] });
+    console.log(err);
+    res.status(200).json({ list: [] });
   }
 });
+
+router.post('/get-user', async function(req, res) {
+  try {
+    const { address } = req.body;
+    const user = await User.findOne({ address });
+    res.status(200).json(user)
+  } catch(err) {
+    res.status(400).json({
+      success: false
+    })
+  }
+})
 
 router.post('/create-new-user', async function(req, res) {
   try {
@@ -36,9 +49,9 @@ router.post('/create-new-user', async function(req, res) {
     });
   } catch(err) {
     console.log(err);
-    res.status(400).json({
+    res.status(200).json({
       error: err?.message
     })
   }
-})
+});
 module.exports = router;

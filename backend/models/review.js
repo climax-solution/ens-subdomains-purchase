@@ -2,13 +2,19 @@ const { Schema, model } = require("mongoose");
 
 const Review = new Schema({
     from: {
-        type: String
+        type: String,
+        lowercase: true
     },
     to: {
+        type: String,
+        lowercase: true
+    },
+    name: {
         type: String
     },
-    rate: {
-        type: Number
+    star: {
+        type: Number,
+        default: 0
     },
     comment: {
         type: String
