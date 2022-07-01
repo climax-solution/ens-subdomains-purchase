@@ -20,7 +20,7 @@ const Accepted = () => {
             try {
                 registrarContract.getPastEvents('NewRegistration', {
                     filter: { owner: account },
-                    fromBlock: 10892100,
+                    fromBlock: 15020207,
                     toBlock: 'latest'
                 }, function(error, events) {
                     //console.log(events);
