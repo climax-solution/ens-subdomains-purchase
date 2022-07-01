@@ -29,7 +29,6 @@ const Review = () => {
             fetchReviews();
         }
 
-        else if (!query.address) setLoading(false);
     }, [query, WEB3]);
 
     const normalize = (str) => {
@@ -53,6 +52,7 @@ const Review = () => {
             setStar(star_sum);
             setLoading(false);
         }
+        else setLoading(false);
     }
     
     const handleStar = (idx) => {
@@ -168,6 +168,7 @@ const Review = () => {
         return "";
     }
 
+    console.log("isLoading", isLoading);
     return (
         <>
             { isProcess ? <GearLoading/> : "" }
