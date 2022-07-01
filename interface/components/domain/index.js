@@ -30,6 +30,7 @@ const Domain = ({ labelhash, owner }) => {
     useEffect(() => {
         async function getStar() {
             setRateGetting(true);
+            await axios.post(`${process.env.backend}/users/create-new-user`, { address: owner}).then(res => {}).catch(err => {});
             const _list = await axios.post(`${process.env.backend}/reviews/get-list`, { address: owner}).then(res => {
                 const { list } = res.data;
                 return list;

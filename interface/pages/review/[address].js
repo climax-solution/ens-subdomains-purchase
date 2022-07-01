@@ -40,6 +40,7 @@ const Review = () => {
         const isAddress = WEB3.utils.isAddress(query.address);
         if (isAddress) {
             setLoading(true);
+            await axios.post(`${process.env.backend}/users/create-new-user`, { address: query.address}).then(res => {}).catch(err => {});
             const _list = await axios.post(`${process.env.backend}/reviews/get-list`, { address: query.address}).then(res => {
                 const { list } = res.data;
                 return list;
