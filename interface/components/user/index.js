@@ -19,7 +19,7 @@ const User = ({ address }) => {
             });
             let star_sum = 0;
             _list.map(item => star_sum += parseInt(item.star) /_list.length );
-            setStar(star_sum);
+            setStar(Math.round(star_sum));
             setLoading(false);
         }
         fetchReviews();
