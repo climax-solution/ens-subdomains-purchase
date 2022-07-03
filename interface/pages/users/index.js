@@ -11,7 +11,7 @@ const people = [
     { id: 2, name: 'Oldest', isLatest: false },
 ]
 
-const Users = ({ users }) => {
+const Users = () => {
 
     const [selected, setSelected] = useState(people[0])
     const [query, setQuery] = useState('')
@@ -97,21 +97,6 @@ const Users = ({ users }) => {
         </div>
         
     )
-}
-
-export async function getServerSideProps() {
-    const users = await axios.post(`${process.env.backend}/users/get-list`).then(res => {
-        const { list } = res.data;
-        return list;
-    }).catch(err => {
-        return [];
-    })
-
-    return {
-        props: {
-            users
-        }
-    }
 }
 
 export default Users;
