@@ -4,6 +4,7 @@ import Empty from "../../components/empty";
 import { Combobox, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from "react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/outline";
+import Loader from "../../components/loader";
 
 const people = [
     { id: 1, name: 'Latest', isLatest: true },
@@ -15,7 +16,9 @@ const Users = ({ users }) => {
     const [selected, setSelected] = useState(people[0])
     const [query, setQuery] = useState('')
     const [walletAddress, setWalletAddress] = useState('');
+    const [users, setUsers] = useState([]);
     const [list, setList] = useState(users);
+    const [isLoading, setLoading] = useState(true);
 
     const filteredPeople =
       query === ''
@@ -30,6 +33,24 @@ const Users = ({ users }) => {
     useEffect(() => {
         filterUser();
     }, [walletAddress]);
+
+    useEffect(() => {
+        async function getUser() {
+            setLoading(true);
+            const _users = await axios.post(`${process.env.backend}/users/get-list`).then(res => {
+                const { list: _list } = res.data;
+                return _list;
+            }).catch(err => {
+                return [];
+            });
+
+            setList(_users);
+            setUsers(_users);
+            setLoading(false);
+        }
+
+        getUser();
+    }, [])
 
     const filterUser = () => {
         if (walletAddress) {
@@ -51,28 +72,34 @@ const Users = ({ users }) => {
                     className="shadow-md border border-violet-300 text-white outline-0 py-2 px-4 rounded-full bg-transparent w-96"
                     placeholder="Search User...."
                     value={walletAddress}
-                    onChange={(e) => setWalletAddress(e.target.value)}
+                    onChange={(e) => {if (!isLoading) setWalletAddress(e.target.value)} }
                 />
             </div>
             <div className="flex flex-wrap gap-3 p-4">
                 {
-                    list.map((item, idx) => (
-                        <User
-                            key={idx}
-                            address={item.address}
-                        />
-                    ))
+                    isLoading ? <Loader/>
+                    : <>
+                    {
+                        list.map((item, idx) => (
+                            <User
+                                key={idx}
+                                address={item.address}
+                            />
+                        ))
+                    }
+                    {
+                        !list.length && <Empty/>
+                    }
+                    </>
                 }
-                {
-                    !list.length && <Empty/>
-                }
+                
             </div>
         </div>
         
     )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
     const users = await axios.post(`${process.env.backend}/users/get-list`).then(res => {
         const { list } = res.data;
         return list;
