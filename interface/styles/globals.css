@@ -21,3 +21,6 @@ a {
   box-sizing: border-box;
 }
  
+.react-simple-star-rating svg {
+  display: inline-block;
+}

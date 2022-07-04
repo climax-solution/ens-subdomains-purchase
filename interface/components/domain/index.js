@@ -39,7 +39,7 @@ const Domain = ({ labelhash, owner }) => {
             });
             let star_sum = 0;
             _list.map(item => star_sum += parseInt(item.star) /_list.length );
-            setStar(Math.round(star_sum));
+            setStar(star_sum);
             setRateGetting(false);
         }
         getStar();
