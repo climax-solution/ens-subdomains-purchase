@@ -40,7 +40,7 @@ const Pricing = () => {
 
     const [prices, setPrices] = useState([]);
     const [labelhash, setLabelHash] = useState();
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchSubscription() {
