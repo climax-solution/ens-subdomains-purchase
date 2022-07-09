@@ -4,8 +4,10 @@ const Star = ({ gold = 0 }) => {
     return (
         <Rating
             initialValue={gold}
+            ratingValue={gold}
             size={20}
             allowHover={false}
+
         />
     )
 }
