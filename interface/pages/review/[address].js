@@ -186,7 +186,7 @@ const Review = () => {
                             <span className="text-white hidden md:inline-block">{query.address}</span>
                             <span className="text-white inline-block md:hidden">{shorten(query.address)}</span>
                             <Star
-                                gold={Math.round(star)}
+                                gold={star}
                             />
                         </div>
                     </div>
